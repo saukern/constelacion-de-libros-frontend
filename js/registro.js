@@ -33,7 +33,6 @@ document.getElementById('registro-form').addEventListener('submit', async (e) =>
 
 		alert('¡Cuenta creada y sesión iniciada con éxito!');
 
-		// Redirigimos a la biblioteca
 		window.location.href = 'PlanetaDigital.html';
 
 	} catch (error) {

@@ -1,12 +1,10 @@
 // URL base del backend
 const API_URL = 'http://localhost:3000/api';
 
-// Obtener token guardado en el navegador
 function obtenerToken() {
 	return localStorage.getItem('token');
 }
 
-// Obtener las cabeceras HTTP comunes incluyendo la autenticación
 function obtenerCabeceras() {
 	const token = obtenerToken();
 	const cabeceras = {
@@ -18,6 +16,22 @@ function obtenerCabeceras() {
 	return cabeceras;
 }
 
+async function procesarRespuesta(respuesta) {
+	const contentType = respuesta.headers.get('content-type');
+	let datos;
+	if (contentType && contentType.includes('application/json')) {
+		datos = await respuesta.json();
+	} else {
+		const texto = await respuesta.text();
+		throw new Error(`Respuesta no JSON (Codigo ${respuesta.status}): ${texto.substring(0, 100)}`);
+	}
+
+	if (!respuesta.ok) {
+		throw new Error(datos.error || `Error del servidor (Codigo ${respuesta.status})`);
+	}
+	return datos;
+}
+
 // Peticion GET al backend para obtener los libros reales del usuario
 async function apiObtenerBiblioteca() {
 	try {
@@ -26,11 +40,7 @@ async function apiObtenerBiblioteca() {
 			headers: obtenerCabeceras()
 		});
 
-		const datos = await respuesta.json();
-
-		if (!respuesta.ok) {
-			throw new Error(datos.error || 'Error al obtener la biblioteca');
-		}
+		const datos = await procesarRespuesta(respuesta);
 
 		// Mapearmos los datos de la BD a la estructura que usa el frontend
 		return datos.map(progreso => {
@@ -46,7 +56,10 @@ async function apiObtenerBiblioteca() {
 				autor: autor,
 				genero: genero,
 				portada: archivo.url_portada,
-				linkLectura: archivo.url_nube
+				linkLectura: archivo.url_nube,
+				formato: archivo.formato,
+				paginaActual: progreso.pagina_actual,
+				estadoLectura: progreso.estado_lectura
 			};
 		});
 
@@ -56,52 +69,60 @@ async function apiObtenerBiblioteca() {
 	}
 }
 
-// Enviar peticion al backend para importar libro desde gutenberg
+// Peticion al Backend para importar un libro desde gutendex 
 async function apiImportarGutenberg(gutenbergId) {
-    try {
-        const respuesta = await fetch(`${API_URL}/biblioteca/importar-gutendex`, {
-            method: 'POST',
-            headers: obtenerCabeceras(),
-            body: JSON.stringify({ gutenbergId: Number(gutenbergId) })
-        });
+	try {
+		const respuesta = await fetch(`${API_URL}/biblioteca/importar-gutendex`, {
+			method: 'POST',
+			headers: obtenerCabeceras(),
+			body: JSON.stringify({ gutenbergId: Number(gutenbergId) })
+		});
 
-        const datos = await respuesta.json();
-
-        if (!respuesta.ok) {
-            throw new Error(datos.error || 'Error al importar desde Gutenberg');
-        }
-
-        return datos;
-    } catch (error) {
-        console.error('Error al importar:', error);
-        throw error;
-    }
+		return await procesarRespuesta(respuesta);
+	} catch (error) {
+		console.error('Error al importar:', error);
+		throw error;
+	}
 }
 
-// Enviar peticion al backend para subir un libro o documento de forma fisica
+// Peticion al backend para subir un libro o documento propio 
 async function apiSubirArchivo(formData) {
-    try {
-        const token = obtenerToken();
-        const cabeceras = {};
-        if (token) {
-            cabeceras['Authorization'] = `Bearer ${token}`;
-        }
+	try {
+		const token = obtenerToken();
+		const cabeceras = {};
+		if (token) {
+			cabeceras['Authorization'] = `Bearer ${token}`;
+		}
 
-        const respuesta = await fetch(`${API_URL}/biblioteca/subir`, {
-            method: 'POST',
-            headers: cabeceras,
-            body: formData
-        });
+		const respuesta = await fetch(`${API_URL}/biblioteca/subir`, {
+			method: 'POST',
+			headers: cabeceras,
+			body: formData
+		});
 
-        const datos = await respuesta.json();
+		return await procesarRespuesta(respuesta);
+	} catch (error) {
+		console.error('Error al subir:', error);
+		throw error;
+	}
+}
 
-        if (!respuesta.ok) {
-            throw new Error(datos.error || 'Error al subir el archivo');
-        }
+// Peticion al backend para actualizar progreso 
+async function apiActualizarProgreso(progresoId, paginaActual, estadoLectura) {
+	try {
+		const cuerpo = {};
+		if (paginaActual !== undefined) cuerpo.pagina_actual = Number(paginaActual);
+		if (estadoLectura !== undefined) cuerpo.estado_lectura = estadoLectura;
 
-        return datos;
-    } catch (error) {
-        console.error('Error al subir:', error);
-        throw error;
-    }
+		const respuesta = await fetch(`${API_URL}/biblioteca/progreso/${progresoId}`, {
+			method: 'PUT',
+			headers: obtenerCabeceras(),
+			body: JSON.stringify(cuerpo)
+		});
+
+		return await procesarRespuesta(respuesta);
+	} catch (error) {
+		console.error('Error al actualizar progreso:', error);
+		throw error;
+	}
 }

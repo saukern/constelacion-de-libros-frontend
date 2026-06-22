@@ -36,32 +36,29 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
 	}
 });
 
-// Manejo del Login de Google
 window.handleCredentialResponse = async (response) => {
-    try {
-        const idToken = response.credential;
-        const respuesta = await fetch(`${API_URL}/auth/google`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ idToken })
-        });
+	try {
+		const idToken = response.credential;
+		const respuesta = await fetch(`${API_URL}/auth/google`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ idToken })
+		});
 
-        const datos = await respuesta.json();
+		const datos = await respuesta.json();
 
-        if (!respuesta.ok) {
-            throw new Error(datos.error || 'Fallo de autenticación con Google');
-        }
+		if (!respuesta.ok) {
+			throw new Error(datos.error || 'Fallo de autenticación con Google');
+		}
 
-        // Guardamos el token y la sesión activa en el navegador
-        localStorage.setItem('token', datos.token);
-        localStorage.setItem('sesionActiva', 'true');
+		localStorage.setItem('token', datos.token);
+		localStorage.setItem('sesionActiva', 'true');
 
-        // Redirigimos a la biblioteca principal
-        window.location.href = 'PlanetaDigital.html';
+		window.location.href = 'PlanetaDigital.html';
 
-    } catch (error) {
-        alert(`Error al iniciar sesión con Google: ${error.message}`);
-    }
+	} catch (error) {
+		alert(`Error al iniciar sesión con Google: ${error.message}`);
+	}
 };
