@@ -55,6 +55,71 @@
 
     
 
+    <!-- modal para subir libro o documento de forma manual -->
+    <div id="upload-modal" class="modal">
+        <div class="modal-header">
+            <h3>Subir Archivo</h3>
+            <button id="close-modal" class="icon-btn">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <form id="upload-form">
+            <div class="form-group">
+                <label for="upload-tipo">Tipo</label>
+                <select id="upload-tipo" required>
+                    <option value="libro">Libro</option>
+                    <option value="documento">Documento</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="upload-titulo">Título*</label>
+                <input type="text" id="upload-titulo" required placeholder="Ej: Las Crónicas de Narnia">
+            </div>
+            
+            <!-- campos especificos para el libro -->
+            <div id="group-libro">
+                <div class="form-group">
+                    <label for="upload-autor">Autor</label>
+                    <input type="text" id="upload-autor" placeholder="Ej: C.S. Lewis">
+                </div>
+                <div class="form-group">
+                    <label for="upload-genero">Género</label>
+                    <input type="text" id="upload-genero" placeholder="Ej: Fantasía">
+                </div>
+            </div>
+
+            <!-- campos especificos para el documento -->
+            <div id="group-documento" style="display: none;">
+                <div class="form-group">
+                    <label for="upload-materia">Materia</label>
+                    <input type="text" id="upload-materia" placeholder="Ej: Tecnologías Web">
+                </div>
+                <div class="form-group">
+                    <label for="upload-tipo-doc">Tipo de Documento</label>
+                    <select id="upload-tipo-doc">
+                        <option value="OTRO">Otro</option>
+                        <option value="DIAPOSITIVAS">Diapositivas</option>
+                        <option value="TAREA">Tarea</option>
+                        <option value="NOTAS">Notas</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="upload-archivo">Archivo (PDF, EPUB)*</label>
+                <input type="file" id="upload-archivo" accept=".pdf,.epub" required>
+            </div>
+            <div class="form-group">
+                <label for="upload-portada">Portada (Imagen)</label>
+                <input type="file" id="upload-portada" accept="image/*">
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btn-cancelar-upload" class="btn-secondary">Cancelar</button>
+                <button type="submit" class="btn-primary">Subir Archivo</button>
+            </div>
+        </form>
+    </div>
+
     <script src="js/api.js"></script>
     <script src="js/codigo.js"></script>
 </body>

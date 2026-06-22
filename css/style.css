@@ -266,3 +266,82 @@ body {
     object-fit: contain;
     border-radius: 4px;    /* Opcional: suaviza un poco las esquinas de la imagen */
 }
+
+/* --- MODALES --- */
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+    z-index: 300;
+    width: 90%;
+    max-width: 450px;
+    display: none;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal.show {
+    display: block;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.75rem;
+}
+
+.modal-header h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.modal .form-group {
+    margin-bottom: 1rem;
+}
+
+.modal .form-group label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.modal .form-group select,
+.modal .form-group input[type="text"] {
+    width: 100%;
+    padding: 0.65rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    outline: none;
+    transition: var(--transition);
+}
+
+.modal .form-group select:focus,
+.modal .form-group input[type="text"]:focus {
+    border-color: var(--accent);
+}
+
+.modal .form-group input[type="file"] {
+    width: 100%;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}

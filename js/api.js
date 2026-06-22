@@ -77,3 +77,31 @@ async function apiImportarGutenberg(gutenbergId) {
         throw error;
     }
 }
+
+// Enviar peticion al backend para subir un libro o documento de forma fisica
+async function apiSubirArchivo(formData) {
+    try {
+        const token = obtenerToken();
+        const cabeceras = {};
+        if (token) {
+            cabeceras['Authorization'] = `Bearer ${token}`;
+        }
+
+        const respuesta = await fetch(`${API_URL}/biblioteca/subir`, {
+            method: 'POST',
+            headers: cabeceras,
+            body: formData
+        });
+
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(datos.error || 'Error al subir el archivo');
+        }
+
+        return datos;
+    } catch (error) {
+        console.error('Error al subir:', error);
+        throw error;
+    }
+}

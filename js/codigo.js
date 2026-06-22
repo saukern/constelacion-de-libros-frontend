@@ -130,46 +130,120 @@ uploadBtn.addEventListener('click', async () => {
         }
     }
 
-    // SE SUBE EN DE MANERA MANUAL Y SE DETECTA EL GÉNERO AUTOMÁTICAMENTE
+    // SE SUBE EN DE MANERA MANUAL
     if (opcion === "2") {
-        const titulo = prompt("Introduce el título del libro:");
-        if (!titulo || titulo.trim() === "") return;
+        abrirModalUpload();
+    }
+});
 
-        const autor = prompt("Introduce el autor del libro:") || "Autor Desconocido";
-        const portada = prompt("URL de la portada de la imagen (Opcional, dale aceptar si no tienes):") || null;
+// ELEMENTOS DEL MODAL
+const uploadModal = document.getElementById('upload-modal');
+const closeModalBtn = document.getElementById('close-modal');
+const cancelModalBtn = document.getElementById('btn-cancelar-upload');
+const uploadForm = document.getElementById('upload-form');
+const uploadTipoSelect = document.getElementById('upload-tipo');
+const groupLibro = document.getElementById('group-libro');
+const groupDocumento = document.getElementById('group-documento');
 
-        //DETECTA EL GÉNERO AUTOMÁTICAMENTE BASADO EN PALABRAS CLAVE
-        let generoDetectado = "Ficción"; 
-        const textoAnalizar = titulo.toLowerCase();
+// abrir modal
+function abrirModalUpload() {
+    uploadModal.classList.add('show');
+    overlay.classList.add('show');
+}
 
-        if (textoAnalizar.includes('anillos') || textoAnalizar.includes('mago') || textoAnalizar.includes('magia') || textoAnalizar.includes('bruja') || textoAnalizar.includes('dragón') || textoAnalizar.includes('crónicas')) {
-            generoDetectado = "Fantasía";
-        } else if (textoAnalizar.includes('galaxia') || textoAnalizar.includes('robot') || textoAnalizar.includes('espacio') || textoAnalizar.includes('futuro') || textoAnalizar.includes('alien') || textoAnalizar.includes('cyber')) {
-            generoDetectado = "Ciencia Ficción";
-        } else if (textoAnalizar.includes('asesinato') || textoAnalizar.includes('crimen') || textoAnalizar.includes('detective') || textoAnalizar.includes('secreto') || textoAnalizar.includes('misterio') || textoAnalizar.includes('sherlock')) {
-            generoDetectado = "Misterio";
-        } else if (textoAnalizar.includes('historia') || textoAnalizar.includes('ciencia') || textoAnalizar.includes('biografía') || textoAnalizar.includes('humana') || textoAnalizar.includes('guía')) {
-            generoDetectado = "No Ficción";
+// cerrar modal
+function cerrarModalUpload() {
+    uploadModal.classList.remove('show');
+    if (!sidebar.classList.contains('open')) {
+        overlay.classList.remove('show');
+    }
+    uploadForm.reset();
+    groupLibro.style.display = 'block';
+    groupDocumento.style.display = 'none';
+}
+
+closeModalBtn?.addEventListener('click', cerrarModalUpload);
+cancelModalBtn?.addEventListener('click', cerrarModalUpload);
+
+// alternar campos segun tipo seleccionado
+uploadTipoSelect?.addEventListener('change', () => {
+    if (uploadTipoSelect.value === 'libro') {
+        groupLibro.style.display = 'block';
+        groupDocumento.style.display = 'none';
+        document.getElementById('upload-archivo').accept = '.epub,.pdf';
+    } else {
+        groupLibro.style.display = 'none';
+        groupDocumento.style.display = 'block';
+        document.getElementById('upload-archivo').accept = '.pdf,.docx,.doc,.txt';
+    }
+});
+
+// procesar envio del formulario de subida
+uploadForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const tipo = uploadTipoSelect.value;
+    const titulo = document.getElementById('upload-titulo').value.trim();
+    const archivoInput = document.getElementById('upload-archivo');
+    const portadaInput = document.getElementById('upload-portada');
+
+    if (!archivoInput.files || archivoInput.files.length === 0) {
+        alert('Por favor selecciona un archivo.');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('tipo', tipo);
+    formData.append('titulo', titulo);
+    formData.append('archivo', archivoInput.files[0]);
+
+    if (portadaInput.files && portadaInput.files.length > 0) {
+        formData.append('portada', portadaInput.files[0]);
+    }
+
+    if (tipo === 'libro') {
+        const autor = document.getElementById('upload-autor').value.trim();
+        const genero = document.getElementById('upload-genero').value.trim();
+        formData.append('autor', autor || 'Autor Desconocido');
+        formData.append('genero', genero || 'General');
+    } else {
+        const materia = document.getElementById('upload-materia').value.trim();
+        const tipoDoc = document.getElementById('upload-tipo-doc').value;
+        formData.append('materia', materia || 'General');
+        formData.append('tipo_documento', tipoDoc || 'OTRO');
+    }
+
+    try {
+        const submitBtn = uploadForm.querySelector('button[type="submit"]');
+        const textOriginal = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Subiendo...';
+
+        const resultado = await apiSubirArchivo(formData);
+
+        submitBtn.disabled = false;
+        submitBtn.textContent = textOriginal;
+
+        cerrarModalUpload();
+
+        // verificar si hay logros desbloqueados
+        if (resultado.logros_desbloqueados && resultado.logros_desbloqueados.length > 0) {
+            const nombresLogros = resultado.logros_desbloqueados.map(l => l.nombre).join(', ');
+            alert(`${resultado.mensaje}\n\n🏆 ¡Has desbloqueado logros!: ${nombresLogros}`);
+        } else {
+            alert(resultado.mensaje);
         }
 
-        const nuevoLibroManual = {
-            id: Date.now(),
-            titulo: titulo.trim(),
-            autor: autor.trim(),
-            genero: generoDetectado,
-            portada: portada ? portada.trim() : null,
-            linkLectura: null 
-        };
+        // recargar biblioteca
+        await cargarBiblioteca();
 
-        librosDisponibles.push(nuevoLibroManual);
-        mostrarLibros('todos');
-
-        // Sincronizar UI del menú lateral
-        genreItems.forEach(i => i.classList.remove('active'));
-        if (genreItems[0]) genreItems[0].classList.add('active'); 
-        sectionTitle.textContent = "✨ Todos los libros";
-
-        alert(`¡"${nuevoLibroManual.titulo}" se subió manualmente y se clasificó automáticamente en "${generoDetectado}"!`);
+    } catch (error) {
+        alert(`Error al subir el archivo: ${error.message}`);
+        const submitBtn = uploadForm.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Subir Archivo';
+        }
     }
 });
 
