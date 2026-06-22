@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReaderApp - Iniciar Sesión</title>
+    <link rel="stylesheet" href="style.css"> <style>
+        /* Estilos específicos para centrar el Login */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--bg-color);
+        }
+        .login-card {
+            background-color: var(--surface-color);
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            width: 100%;
+            max-width: 360px;
+            border: 1px solid var(--border-color);
+        }
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            outline: none;
+            transition: var(--transition);
+        }
+        .form-group input:focus {
+            border-color: var(--text-main);
+        }
+        .login-card h2 {
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="login-card">
+            <h2>Iniciar Sesión</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Usuario o Correo</label>
+                    <input type="text" id="username" required placeholder="usuario@correo.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 1rem;">
+                    Ingresar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Lógica del Login temporal antes de conectar la base de datos
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault(); // Evita que la página se recargue
+            
+            const usuario = document.getElementById('username').value;
+            const contrasena = document.getElementById('password').value;
+
+            // Simulación de validación aqui despues se valida con la base de datos
+            if (usuario.trim() !== "" && contrasena === "1234") {
+                // Guardamos en la memoria del navegador que el usuario ya entró
+                localStorage.setItem('sesionActiva', 'true');
+                // Lo mandamos a la biblioteca principal
+                window.location.href = 'PlanetaDigital.html';
+            } else {
+                alert("Contraseña incorrecta (Prueba usando '1234')");
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constelación de Libros</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" />
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-left">
+            <button id="menu-toggle" class="icon-btn">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+            <div class="logo">
+    <img src="logo.png" alt="Logo Constelación" class="logo-img">
+    Constelación de libros
+</div>
+        
+        <div class="nav-right">
+            <button id="upload-btn" class="btn-primary">
+                <span class="material-symbols-outlined">upload_file</span> Subir Libro
+            </button>
+            <button id="logout-btn" class="btn-secondary">
+                <span class="material-symbols-outlined">logout</span> Salir
+            </button>
+        </div>
+    </header>
+
+    <aside id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h3>Géneros</h3>
+            <button id="close-sidebar" class="icon-btn">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <ul class="genre-list">
+            <li><a href="#" class="genre-item active" data-genre="todos">✨ Todos los libros</a></li>
+            <li><a href="#" class="genre-item" data-genre="Ficción">🚀 Ficción</a></li>
+            <li><a href="#" class="genre-item" data-genre="Fantasía">🔮 Fantasía</a></li>
+            <li><a href="#" class="genre-item" data-genre="Ciencia Ficción">🌌 Ciencia Ficción</a></li>
+            <li><a href="#" class="genre-item" data-genre="Misterio">🕵️‍♂️ Misterio</a></li>
+            <li><a href="#" class="genre-item" data-genre="No Ficción">📖 No Ficción</a></li>
+        </ul>
+    </aside>
+
+    <div id="overlay" class="overlay"></div>
+
+    <main class="main-content">
+        <h2 id="section-title">Todos los libros</h2>
+        <section id="books-grid" class="books-grid"></section>
+    </main>
+
+    
+
+    <script src="codigo.js"></script>
+</body>
+</html>
