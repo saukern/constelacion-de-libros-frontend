@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ReaderApp - Iniciar Sesión</title>
-    <link rel="stylesheet" href="css/style.css"> <style>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
         /* Estilos específicos para centrar el Login */
         .login-container {
             display: flex;
@@ -47,6 +49,40 @@
             font-weight: 600;
             letter-spacing: -0.03em;
         }
+        .register-prompt {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .register-link {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex-grow: 1;
+            border-top: 1px solid var(--border-color);
+        }
+        .divider::before {
+            margin-right: 0.5rem;
+        }
+        .divider::after {
+            margin-left: 0.5rem;
+        }
+        .google-login-container {
+            display: flex;
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
@@ -67,6 +103,29 @@
                     Ingresar
                 </button>
             </form>
+            <p class="register-prompt">
+                ¿No tienes cuenta? <a href="registro.html" class="register-link">Regístrate aquí</a>
+            </p>
+            <div class="divider">
+                o
+            </div>
+            <div class="google-login-container">
+                <div id="g_id_onload"
+                     data-client_id="812541557311-o1cilo6kob61feb3qhpjfsbtbl3sjbsm.apps.googleusercontent.com"
+                     data-context="signin"
+                     data-ux_mode="popup"
+                     data-callback="handleCredentialResponse"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-shape="pill"
+                     data-theme="outline"
+                     data-text="signin_with"
+                     data-size="large"
+                     data-logo_alignment="left">
+                </div>
+            </div>
         </div>
     </div>
 
