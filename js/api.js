@@ -55,3 +55,25 @@ async function apiObtenerBiblioteca() {
 		throw error;
 	}
 }
+
+// Enviar peticion al backend para importar libro desde gutenberg
+async function apiImportarGutenberg(gutenbergId) {
+    try {
+        const respuesta = await fetch(`${API_URL}/biblioteca/importar-gutendex`, {
+            method: 'POST',
+            headers: obtenerCabeceras(),
+            body: JSON.stringify({ gutenbergId: Number(gutenbergId) })
+        });
+
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(datos.error || 'Error al importar desde Gutenberg');
+        }
+
+        return datos;
+    } catch (error) {
+        console.error('Error al importar:', error);
+        throw error;
+    }
+}

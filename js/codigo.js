@@ -96,59 +96,37 @@ uploadBtn.addEventListener('click', async () => {
     const API_KEY = "TU_API_KEY"; 
     
     // 1. Preguntar qué desea hacer el usuario
-    const opcion = prompt("¿Cómo deseas agregar el libro?\nEscribe '1' para buscar en Google Books\nEscribe '2' para subirlo manualmente");
+    const opcion = prompt("¿Cómo deseas agregar el libro?\nEscribe '1' para importar desde Project Gutenberg por ID\nEscribe '2' para subirlo manualmente");
     
     if (opcion !== "1" && opcion !== "2") {
         alert("Opción no válida.");
         return;
     }
 
-    // BÚSQUEDA AUTOMÁTICA EN GOOGLE BOOKS 
+    // IMPORTAR DESDE GUTENBERG
     if (opcion === "1") {
-        const libroBuscado = prompt("Introduce el nombre del libro o autor que deseas buscar en Google:");
-        if (!libroBuscado || libroBuscado.trim() === "") return;
+        const gutenbergId = prompt("Introduce el ID del libro de Project Gutenberg (ej: 11 o 1342):");
+        if (!gutenbergId || gutenbergId.trim() === "") return;
 
         try {
-            const query = encodeURIComponent(libroBuscado.trim());
-            const url = `https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=1&key=${API_KEY}`;
-            const respuesta = await fetch(url);
-            if (!respuesta.ok) throw new Error(`Error en el servidor de Google: ${respuesta.status}`);
-            const datos = await respuesta.json();
+            // mensaje temporal por si tarda la descarga
+            alert("Iniciando descarga e importacion desde Gutenberg, por favor espera unos segundos...");
 
-            if (!datos.items || datos.items.length === 0) {
-                alert(`No se encontraron resultados para: "${libroBuscado}".`);
-                return;
+            const resultado = await apiImportarGutenberg(gutenbergId);
+
+            // verificar si hay logros desbloqueados
+            if (resultado.logros_desbloqueados && resultado.logros_desbloqueados.length > 0) {
+                const nombresLogros = resultado.logros_desbloqueados.map(l => l.nombre).join(', ');
+                alert(`${resultado.mensaje}\n\n🏆 ¡Has desbloqueado logros!: ${nombresLogros}`);
+            } else {
+                alert(resultado.mensaje);
             }
 
-            const infoLibro = datos.items[0].volumeInfo;
-            let urlPortada = infoLibro?.imageLinks?.thumbnail ? infoLibro.imageLinks.thumbnail.replace(/^http:/i, 'https:') : null;
-
-            // Traductor de géneros de Google
-            let generoAsignado = "Ficción"; 
-            if (infoLibro?.categories && infoLibro.categories.length > 0) {
-                let categoriaGoogle = infoLibro.categories[0].toLowerCase();
-                if (categoriaGoogle.includes('fiction')) generoAsignado = "Ficción";
-                else if (categoriaGoogle.includes('fantasy') || categoriaGoogle.includes('potter')) generoAsignado = "Fantasía";
-                else if (categoriaGoogle.includes('mystery') || categoriaGoogle.includes('thriller')) generoAsignado = "Misterio";
-                else if (categoriaGoogle.includes('history') || categoriaGoogle.includes('biography')) generoAsignado = "No Ficción";
-                else generoAsignado = infoLibro.categories[0].split('/')[0].trim();
-            }
-
-            const nuevoLibro = {
-                id: Date.now(),
-                titulo: infoLibro.title || "Título Desconocido",
-                autor: infoLibro.authors ? infoLibro.authors.join(', ') : "Autor Desconocido",
-                genero: generoAsignado,
-                portada: urlPortada,
-                linkLectura: infoLibro.previewLink || null
-            };
-
-            librosDisponibles.push(nuevoLibro);
-            mostrarLibros('todos');
-            alert(`¡"${nuevoLibro.titulo}" se ha agregado con éxito desde Google!`);
+            // recargar biblioteca para ver el libro
+            await cargarBiblioteca();
 
         } catch (error) {
-            alert(`Ocurrió un problema: ${error.message}`);
+            alert(`Error al importar libro: ${error.message}`);
         }
     }
 
