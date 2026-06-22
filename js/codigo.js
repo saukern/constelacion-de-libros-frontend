@@ -4,13 +4,7 @@ if (localStorage.getItem('sesionActiva') !== 'true') {
 }
 
 // DATOS DE PRUEBA INICIALES 
-let librosDisponibles = [
-    { id: 1, titulo: "El Hobbit", autor: "J.R.R. Tolkien", genero: "Fantasía", portada: null, linkLectura: null },
-    { id: 2, titulo: "Dune", autor: "Frank Herbert", genero: "Ciencia Ficción", portada: null, linkLectura: null },
-    { id: 3, titulo: "1984", autor: "George Orwell", genero: "Ficción", portada: null, linkLectura: null },
-    { id: 4, titulo: "Estudio en Escarlata", autor: "Arthur Conan Doyle", genero: "Misterio", portada: null, linkLectura: null },
-    { id: 5, titulo: "Sapiens", autor: "Yuval Noah Harari", genero: "No Ficción", portada: null, linkLectura: null }
-];
+let librosDisponibles = [];
 
 // ELEMENTOS DEL DOM
 const menuToggle = document.getElementById('menu-toggle');
@@ -65,7 +59,7 @@ function mostrarLibros(generoFiltrado = 'todos') {
                 ${portadaHTML}
             </div>
             <h4 class="book-title" title="${libro.titulo}">${libro.titulo}</h4>
-            <p class="book-author">${libro.author}</p>
+            <p class="book-author">${libro.autor}</p>
         `;
         
         // Abre la vista previa de Google en una pestaña nueva si existe
@@ -205,10 +199,21 @@ uploadBtn.addEventListener('click', async () => {
 document.getElementById('logout-btn')?.addEventListener('click', (e) => {
     e.preventDefault();
     localStorage.removeItem('sesionActiva');
+    localStorage.removeItem('token'); // Remover el token de sesión
     window.location.href = 'login.html';
 });
 
+// Función para cargar los libros del backend
+async function cargarBiblioteca() {
+    try {
+        librosDisponibles = await apiObtenerBiblioteca();
+        mostrarLibros('todos');
+    } catch (error) {
+        alert(`No se pudo cargar la biblioteca: ${error.message}`);
+    }
+}
+
 // INICIALIZACIÓN
 document.addEventListener('DOMContentLoaded', () => {
-    mostrarLibros('todos');
+    cargarBiblioteca();
 });
