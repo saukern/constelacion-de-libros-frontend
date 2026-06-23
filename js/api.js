@@ -1,5 +1,5 @@
 // URL base del backend
-const API_URL = 'http://localhost:3000/api';
+const API_URL = 'https://constelacion-de-libros-backend.onrender.com/api';
 
 // Función que obtiene el token de sesión guardado
 function obtenerToken() {
