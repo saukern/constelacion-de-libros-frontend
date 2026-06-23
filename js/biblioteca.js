@@ -7,7 +7,7 @@ if (localStorage.getItem('sesionActiva') !== 'true') {
 let librosDisponibles = [];
 let activeTab = 'todos';
 
-// Muestra notificaciones flotantes en pantalla
+// Función que muestra notificaciones flotantes en pantalla
 function mostrarToast(mensaje, tipo = 'success') {
 	const container = document.getElementById('toast-container');
 	if (!container) return;
@@ -36,7 +36,7 @@ function mostrarToast(mensaje, tipo = 'success') {
 	}, 4000);
 }
 
-// Muestra un modal de confirmación personalizado
+// Variable que almacena la acción de confirmación
 let confirmModalCallback = null;
 
 const confirmModal = document.getElementById('confirm-modal');
@@ -46,6 +46,7 @@ const confirmYesBtn = document.getElementById('btn-confirm-yes');
 const confirmNoBtn = document.getElementById('btn-confirm-no');
 const closeConfirmModalBtn = document.getElementById('close-confirm-modal');
 
+// Función que muestra el modal de confirmación personalizado
 function mostrarConfirmacion(titulo, mensaje, alConfirmar) {
 	confirmTitle.textContent = titulo;
 	confirmMessage.textContent = mensaje;
@@ -55,6 +56,7 @@ function mostrarConfirmacion(titulo, mensaje, alConfirmar) {
 	overlay.classList.add('show');
 }
 
+// Función que cierra el modal de confirmación personalizado
 function cerrarConfirmacion() {
 	confirmModal.classList.remove('show');
 	if (!sidebar.classList.contains('open') && !editModal.classList.contains('show') && !uploadModal.classList.contains('show')) {
@@ -83,12 +85,13 @@ const sectionTitle = document.getElementById('section-title');
 const genreItems = document.querySelectorAll('.genre-item');
 const uploadBtn = document.getElementById('upload-btn');
 
-// Controla la apertura y cierre del menú lateral
+// Función que abre el menú lateral de categorías
 function abrirMenu() {
 	sidebar.classList.add('open');
 	overlay.classList.add('show');
 }
 
+// Función que cierra el menú lateral de categorías
 function cerrarMenu() {
 	sidebar.classList.remove('open');
 	overlay.classList.remove('show');
@@ -98,7 +101,7 @@ menuToggle.addEventListener('click', abrirMenu);
 closeSidebar.addEventListener('click', cerrarMenu);
 overlay.addEventListener('click', cerrarMenu);
 
-// Agrupa géneros complejos en categorías estándar u "Otros"
+// Función que normaliza y agrupa los géneros en categorías comunes
 function obtenerGeneroEstandar(generoRaw) {
 	if (!generoRaw) return 'Otros';
 	
@@ -131,7 +134,7 @@ function obtenerGeneroEstandar(generoRaw) {
 	return 'Otros';
 }
 
-// Dibuja las tarjetas de libros y documentos en la pantalla
+// Función que renderiza los libros y documentos en la cuadrícula
 function mostrarLibros(generoFiltrado = 'todos') {
 	booksGrid.innerHTML = '';
 
@@ -237,7 +240,7 @@ function mostrarLibros(generoFiltrado = 'todos') {
 	});
 }
 
-// Actualiza dinámicamente las categorías del menú lateral
+// Función que actualiza dinámicamente las categorías del menú lateral
 function actualizarSidebar() {
 	const sidebarHeader = document.querySelector('.sidebar-header h3');
 	const genreList = document.querySelector('.genre-list');
@@ -332,7 +335,7 @@ function actualizarSidebar() {
 	});
 }
 
-// Abre el lector de libros o documentos
+// Función que redirige al lector de libros o documentos
 function abrirLector(libro) {
 	console.log('Abriendo lector. Datos del libro/documento:', libro);
 	if (libro.linkLectura) {
@@ -362,6 +365,7 @@ const editTipoDocSelect = document.getElementById('edit-tipo-doc');
 const editGroupLibro = document.getElementById('edit-group-libro');
 const editGroupDocumento = document.getElementById('edit-group-documento');
 
+// Función que abre el modal para editar metadatos y estado de lectura
 function abrirModalEditar(libro) {
 	editIdInput.value = libro.archivoId; // El backend actualiza por el ID del archivo
 	editProgresoIdInput.value = libro.id;
@@ -385,6 +389,7 @@ function abrirModalEditar(libro) {
 	overlay.classList.add('show');
 }
 
+// Función que cierra el modal de edición
 function cerrarModalEditar() {
 	editModal.classList.remove('show');
 	if (!sidebar.classList.contains('open')) {
@@ -452,6 +457,7 @@ editForm?.addEventListener('submit', async (e) => {
 	}
 });
 
+// Función que solicita confirmación y quita un libro de la biblioteca
 async function confirmarEliminarLibro(libro) {
 	mostrarConfirmacion(
 		'Quitar de Biblioteca',
@@ -482,13 +488,13 @@ const uploadTipoSelect = document.getElementById('upload-tipo');
 const groupLibro = document.getElementById('group-libro');
 const groupDocumento = document.getElementById('group-documento');
 
-// abrir modal
+// Función que abre el modal para subir archivos propios
 function abrirModalUpload() {
 	uploadModal.classList.add('show');
 	overlay.classList.add('show');
 }
 
-// cerrar modal
+// Función que cierra el modal de subida
 function cerrarModalUpload() {
 	uploadModal.classList.remove('show');
 	if (!sidebar.classList.contains('open')) {
@@ -651,7 +657,7 @@ const searchBtn = document.getElementById('search-btn');
 const discoverResults = document.getElementById('discover-results');
 const discoverTitle = document.getElementById('discover-title');
 
-// Renderiza resultados de Gutendex
+// Función que renderiza los resultados de búsqueda de Gutenberg
 function renderizarResultadosGutenberg(books) {
 	if (!books || books.length === 0) {
 		discoverResults.innerHTML = `<p style="color: var(--text-muted); grid-column: 1/-1; text-align: center; margin-top: 2rem;">No se encontraron resultados.</p>`;
@@ -720,7 +726,7 @@ function renderizarResultadosGutenberg(books) {
 	});
 }
 
-// Carga los libros más populares por defecto
+// Función que carga los libros más populares de Gutenberg
 async function cargarLibrosPopularesGutenberg() {
 	if (discoverResults.children.length > 0 && discoverTitle.textContent === 'Libros Populares') {
 		return;
@@ -741,6 +747,7 @@ async function cargarLibrosPopularesGutenberg() {
 	}
 }
 
+// Función que busca libros en la API de Gutenberg
 async function buscarGutenberg() {
 	const query = searchInput.value.trim();
 	if (!query) {
@@ -779,6 +786,7 @@ const metaProgressFill = document.getElementById('meta-progress-fill');
 const metaInput = document.getElementById('meta-input');
 const metaBtn = document.getElementById('meta-btn');
 
+// Función que carga las metas y logros del usuario
 async function cargarMetasYLogros() {
 	try {
 		// 1. Cargar Meta Literaria
@@ -870,7 +878,7 @@ metaBtn?.addEventListener('click', async () => {
 	}
 });
 
-// Función para cargar los libros del backend
+// Función que carga los libros y documentos del backend
 async function cargarBiblioteca() {
 	try {
 		librosDisponibles = await apiObtenerBiblioteca();
