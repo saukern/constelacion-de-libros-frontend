@@ -33,7 +33,7 @@ let pomodoroIsRunning = false;
 let pomodoroStartPage = 0;
 let pomodoroActiveDuration = 1500;
 
-// SISTEMA DE NOTIFICACIONES TOAST PERSONALIZADO
+// Función que muestra notificaciones flotantes en pantalla
 function mostrarToast(mensaje, tipo = 'success') {
 	const container = document.getElementById('toast-container');
 	if (!container) return;
@@ -62,7 +62,7 @@ function mostrarToast(mensaje, tipo = 'success') {
 	}, 4000);
 }
 
-// SISTEMA DE CONFIRMACIÓN PERSONALIZADO
+// Variable que almacena la acción de confirmación
 let confirmModalCallback = null;
 
 const confirmModal = document.getElementById('confirm-modal');
@@ -73,6 +73,7 @@ const confirmNoBtn = document.getElementById('btn-confirm-no');
 const closeConfirmModalBtn = document.getElementById('close-confirm-modal');
 const overlay = document.getElementById('overlay');
 
+// Función que muestra el modal de confirmación personalizado
 function mostrarConfirmacion(titulo, mensaje, alConfirmar) {
 	confirmTitle.textContent = titulo;
 	confirmMessage.textContent = mensaje;
@@ -82,6 +83,7 @@ function mostrarConfirmacion(titulo, mensaje, alConfirmar) {
 	overlay.classList.add('show');
 }
 
+// Función que cierra el modal de confirmación personalizado
 function cerrarConfirmacion() {
 	confirmModal.classList.remove('show');
 	overlay.classList.remove('show');
@@ -99,7 +101,7 @@ confirmNoBtn?.addEventListener('click', cerrarConfirmacion);
 closeConfirmModalBtn?.addEventListener('click', cerrarConfirmacion);
 overlay?.addEventListener('click', cerrarConfirmacion);
 
-// Obtiene los parametros desde el hash de la URL
+// Función que obtiene los parámetros de configuración de la URL
 function obtenerParametrosURL() {
 	const hash = window.location.hash.substring(1);
 	const params = new URLSearchParams(hash);
@@ -112,7 +114,7 @@ function obtenerParametrosURL() {
 	};
 }
 
-// Inicializa el lector adecuado según el formato
+// Función que inicializa el lector correspondiente según el formato
 function inicializarLector() {
 	const { id, titulo, formato, url, paginaActual } = obtenerParametrosURL();
 	progresoId = id;
@@ -144,7 +146,7 @@ function inicializarLector() {
 	}
 }
 
-// Carga y configura el archivo EPUB con Epub.js
+// Función que carga y configura el archivo EPUB
 function cargarEpub(url) {
 	try {
 		bookInstance = ePub(url);
@@ -280,7 +282,7 @@ function cargarEpub(url) {
 	}
 }
 
-// Guarda progreso de lectura en la base de datos con debounce
+// Función que guarda el progreso de lectura con debounce
 function autoGuardarProgreso(pagina, esUltimaPagina = false) {
 	clearTimeout(debounceTimeout);
 	debounceTimeout = setTimeout(async () => {
@@ -303,7 +305,7 @@ function autoGuardarProgreso(pagina, esUltimaPagina = false) {
 	}, 2000);
 }
 
-// Configura controles de fuente, tamaño y temas del EPUB
+// Función que configura los controles de fuente y temas del EPUB
 function configurarControlesEpub() {
 	document.getElementById('font-increase')?.addEventListener('click', () => {
 		if (currentFontSize < 200) {
@@ -351,7 +353,7 @@ function configurarControlesEpub() {
 	});
 }
 
-// Inyecta estilos personalizados al iframe del EPUB para forzar colores
+// Función que inyecta estilos personalizados al iframe del EPUB
 function inyectarEstilosIframe(doc) {
 	if (!doc) return;
 
@@ -391,7 +393,7 @@ function inyectarEstilosIframe(doc) {
 	`;
 }
 
-// Re-inyecta estilos en todos los iframes cargados
+// Función que re-inyecta estilos en todos los iframes activos
 function aplicarEstilosGlobalesIframes() {
 	const iframes = document.querySelectorAll('#epub-viewer iframe');
 	iframes.forEach(iframe => {
@@ -404,7 +406,7 @@ function aplicarEstilosGlobalesIframes() {
 	});
 }
 
-// Aplica el tamaño y tipo de fuente seleccionados
+// Función que aplica el tamaño y tipo de fuente seleccionados
 function aplicarEstilosEpub() {
 	if (renditionInstance) {
 		renditionInstance.themes.fontSize(`${currentFontSize}%`);
@@ -414,7 +416,7 @@ function aplicarEstilosEpub() {
 	aplicarEstilosGlobalesIframes();
 }
 
-// Cambia el tema activo del lector
+// Función que cambia el tema de fondo activo del lector
 function cambiarTema(tema) {
 	currentTheme = tema;
 	if (renditionInstance) {
@@ -490,7 +492,7 @@ document.getElementById('back-btn')?.addEventListener('click', () => {
 	window.location.href = 'PlanetaDigital.html';
 });
 
-// Carga y renderiza el PDF usando PDF.js
+// Función que carga y renderiza el PDF
 function cargarPdf(url, paginaInicial) {
 	pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
@@ -552,7 +554,7 @@ function cargarPdf(url, paginaInicial) {
 	});
 }
 
-// Configura IntersectionObserver para renderizado inteligente del PDF
+// Función que configura el observador de páginas para el PDF
 function configurarObserverPdf() {
 	const options = {
 		root: document.getElementById('pdf-area'),
@@ -580,7 +582,7 @@ function configurarObserverPdf() {
 	pages.forEach(page => observerInstance.observe(page));
 }
 
-// Renderiza en canvas una pagina especifica del PDF
+// Función que dibuja en canvas una página del PDF
 function renderizarPaginaPdf(pageNum) {
 	if (!pdfDocInstance || pdfPagesRendered[pageNum]) return;
 	pdfPagesRendered[pageNum] = true;
@@ -610,7 +612,7 @@ function renderizarPaginaPdf(pageNum) {
 	});
 }
 
-// Carga las anotaciones del progreso actual desde el backend
+// Función que carga las anotaciones del progreso desde el backend
 async function cargarAnotacionesLibro() {
 	if (!progresoId) return;
 	try {
@@ -623,7 +625,7 @@ async function cargarAnotacionesLibro() {
 	}
 }
 
-// Dibuja todos los resaltados en la visualizacion de Epub.js
+// Función que dibuja los resaltados guardados en el EPUB
 function dibujarAnotaciones() {
 	if (!renditionInstance || !activeAnotaciones.length) return;
 
@@ -670,7 +672,7 @@ function dibujarAnotaciones() {
 	});
 }
 
-// Posiciona y muestra el popover flotante sobre la seleccion
+// Función que posiciona y muestra el menú flotante sobre la selección
 function mostrarPopoverAnotacion(top, left, width, height) {
 	const popover = document.getElementById('annotation-popover');
 	if (!popover) return;
@@ -717,7 +719,7 @@ function mostrarPopoverAnotacion(top, left, width, height) {
 	popover.style.left = `${popoverLeft}px`;
 }
 
-// Oculta el popover de anotaciones
+// Función que oculta el menú flotante de anotación
 function ocultarPopoverAnotacion() {
 	const popover = document.getElementById('annotation-popover');
 	if (popover) {
@@ -727,7 +729,7 @@ function ocultarPopoverAnotacion() {
 	activeSelectionText = '';
 }
 
-// Limpia la seleccion de texto activa del EPUB
+// Función que limpia la selección activa de texto
 function limpiarSeleccionEpub() {
 	if (activeSelectionContents) {
 		try {
@@ -739,7 +741,7 @@ function limpiarSeleccionEpub() {
 	}
 }
 
-// Inicializa eventos para colores y guardado en popover
+// Función que inicializa los eventos de guardado del popover
 function inicializarEventosPopover() {
 	const dots = document.querySelectorAll('.color-dot');
 	dots.forEach(dot => {
@@ -797,7 +799,7 @@ function inicializarEventosPopover() {
 	});
 }
 
-// Inicializa apertura/cierre de la barra lateral de anotaciones
+// Función que inicializa los eventos de la barra lateral de notas
 function inicializarEventosSidebar() {
 	const sidebar = document.getElementById('annotations-sidebar');
 	const toggleBtn = document.getElementById('btn-annotations-toggle');
@@ -815,7 +817,7 @@ function inicializarEventosSidebar() {
 	});
 }
 
-// Renderiza dinamicamente el listado en la barra lateral
+// Función que renderiza la lista de anotaciones en el panel lateral
 function renderizarListaSidebar() {
 	const listEl = document.getElementById('annotations-list');
 	if (!listEl) return;
@@ -897,7 +899,7 @@ function renderizarListaSidebar() {
 	});
 }
 
-// Previene ataques XSS escapando HTML
+// Función que escapa caracteres especiales HTML para evitar ataques XSS
 function escapeHtml(text) {
 	if (!text) return '';
 	return text
@@ -908,7 +910,7 @@ function escapeHtml(text) {
 		.replace(/'/g, "&#039;");
 }
 
-// Inicializa controles de la barra Pomodoro
+// Función que inicializa los eventos del temporizador Pomodoro
 function inicializarEventosPomodoro() {
 	const pomodoroBar = document.getElementById('pomodoro-bar');
 	const toggleBtn = document.getElementById('btn-pomodoro-toggle');
@@ -958,7 +960,7 @@ function inicializarEventosPomodoro() {
 	});
 }
 
-// Inicia el cronómetro Pomodoro
+// Función que inicia el temporizador Pomodoro
 function iniciarPomodoro() {
 	if (pomodoroIsRunning) return;
 
@@ -999,7 +1001,7 @@ function iniciarPomodoro() {
 	}, 1000);
 }
 
-// Pausa el cronómetro Pomodoro
+// Función que pausa el temporizador Pomodoro
 function pausarPomodoro() {
 	if (!pomodoroIsRunning) return;
 	clearInterval(pomodoroInterval);
@@ -1010,14 +1012,14 @@ function pausarPomodoro() {
 	}
 }
 
-// Reinicia el cronómetro Pomodoro a su duracion configurada
+// Función que reinicia el temporizador Pomodoro a su duración activa
 function reiniciarPomodoro() {
 	pausarPomodoro();
 	pomodoroTimeLeft = pomodoroActiveDuration;
 	actualizarTimerUI();
 }
 
-// Refresca la cifra mostrada del cronómetro
+// Función que actualiza la interfaz visual del temporizador
 function actualizarTimerUI() {
 	const minutes = Math.floor(pomodoroTimeLeft / 60);
 	const seconds = pomodoroTimeLeft % 60;
@@ -1027,7 +1029,7 @@ function actualizarTimerUI() {
 	}
 }
 
-// Genera un sonido de aviso con la Web Audio API
+// Función que emite una alerta sonora al finalizar el temporizador
 function reproducirSonidoNotificacion() {
 	try {
 		const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -1060,7 +1062,7 @@ function reproducirSonidoNotificacion() {
 	}
 }
 
-// Registra la sesion leida en el backend
+// Función que registra la sesión de lectura completada
 async function finalizarSesionLecturaPomodoro() {
 	const endPage = Number(document.getElementById('page-input').value) || 0;
 	const paginasLeidas = Math.max(0, endPage - pomodoroStartPage);
