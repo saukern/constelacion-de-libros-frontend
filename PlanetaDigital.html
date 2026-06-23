@@ -9,6 +9,7 @@
 </head>
 <body>
 
+    <!-- Barra de navegación superior -->
     <header class="navbar">
         <div class="nav-left">
             <button id="menu-toggle" class="icon-btn">
@@ -32,6 +33,7 @@
         </div>
     </header>
 
+    <!-- Menú lateral de categorías -->
     <aside id="sidebar" class="sidebar">
         <div class="sidebar-header">
             <h3>Géneros</h3>
@@ -49,6 +51,7 @@
         </ul>
     </aside>
 
+    <!-- Fondo de superposición (Overlay) -->
     <div id="overlay" class="overlay"></div>
 
     <main class="main-content">
@@ -77,8 +80,10 @@
             </button>
         </div>
 
+        <!-- Cuadrícula de libros y documentos -->
         <section id="books-grid" class="books-grid"></section>
 
+        <!-- Buscador de Gutenberg -->
         <div id="discover-area" class="discover-area" style="display: none;">
             <div class="search-bar-container">
                 <input type="text" id="search-input" placeholder="Buscar libros por título o autor en Gutenberg...">
@@ -91,6 +96,7 @@
             <div id="discover-results" class="books-grid"></div>
         </div>
 
+        <!-- Panel de metas y logros -->
         <div id="logros-area" class="logros-area" style="display: none;">
             <div class="meta-container card-panel">
                 <div class="meta-header">
@@ -131,6 +137,7 @@
         </div>
     </main>
 
+    <!-- Modal para subir archivos -->
     <div id="upload-modal" class="modal">
         <div class="modal-header">
             <h3>Subir Archivo</h3>
@@ -193,6 +200,7 @@
         </form>
     </div>
 
+    <!-- Modal para editar metadatos -->
     <div id="edit-modal" class="modal">
         <div class="modal-header">
             <h3>Editar Metadatos</h3>
@@ -251,6 +259,7 @@
         </form>
     </div>
 
+    <!-- Modal de confirmación de acciones -->
     <div id="confirm-modal" class="modal">
         <div class="modal-header">
             <h3 id="confirm-title">Confirmación</h3>
@@ -271,6 +280,6 @@
     <div id="toast-container" class="toast-container"></div>
 
     <script src="js/api.js"></script>
-    <script src="js/codigo.js"></script>
+    <script src="js/biblioteca.js"></script>
 </body>
 </html>
