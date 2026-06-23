@@ -258,7 +258,15 @@ body {
     font-size: 1.35rem;
     font-weight: 800;
     letter-spacing: -0.03em;
-    color: var(--text-main);
+    background: linear-gradient(135deg, #ffffff 50%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.logo:hover {
+    filter: brightness(1.1);
 }
 
 .logo-img {
@@ -266,6 +274,13 @@ body {
     width: auto;           /* Mantiene la proporción original de la imagen sin deformarla */
     object-fit: contain;
     border-radius: 4px;    /* Opcional: suaviza un poco las esquinas de la imagen */
+    filter: drop-shadow(0 0 6px rgba(99, 102, 241, 0.45));
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.logo:hover .logo-img {
+    transform: scale(1.12) rotate(6deg);
+    filter: drop-shadow(0 0 10px var(--accent));
 }
 
 /* --- MODALES --- */
