@@ -126,3 +126,69 @@ async function apiActualizarProgreso(progresoId, paginaActual, estadoLectura) {
 		throw error;
 	}
 }
+
+// Petición al backend para crear una anotación/resaltado
+async function apiCrearAnotacion(anotacion) {
+	try {
+		const respuesta = await fetch(`${API_URL}/biblioteca/anotaciones`, {
+			method: 'POST',
+			headers: obtenerCabeceras(),
+			body: JSON.stringify(anotacion)
+		});
+
+		return await procesarRespuesta(respuesta);
+	} catch (error) {
+		console.error('Error al crear anotación:', error);
+		throw error;
+	}
+}
+
+// Petición al backend para obtener las anotaciones de un libro/progreso
+async function apiObtenerAnotaciones(progresoUsuarioId) {
+	try {
+		const respuesta = await fetch(`${API_URL}/biblioteca/anotaciones/${progresoUsuarioId}`, {
+			method: 'GET',
+			headers: obtenerCabeceras()
+		});
+
+		return await procesarRespuesta(respuesta);
+	} catch (error) {
+		console.error('Error al obtener anotaciones:', error);
+		throw error;
+	}
+}
+
+// Petición al backend para eliminar una anotación
+async function apiEliminarAnotacion(anotacionId) {
+	try {
+		const respuesta = await fetch(`${API_URL}/biblioteca/anotaciones/${anotacionId}`, {
+			method: 'DELETE',
+			headers: obtenerCabeceras()
+		});
+
+		return await procesarRespuesta(respuesta);
+	} catch (error) {
+		console.error('Error al eliminar anotación:', error);
+		throw error;
+	}
+}
+
+// Petición al backend para registrar una sesión de lectura finalizada (ej. Pomodoro)
+async function apiRegistrarSesionLectura(progresoId, duracionMinutos, paginasLeidas) {
+	try {
+		const respuesta = await fetch(`${API_URL}/biblioteca/progreso/${progresoId}/sesion`, {
+			method: 'POST',
+			headers: obtenerCabeceras(),
+			body: JSON.stringify({
+				duracion_minutos: Number(duracionMinutos),
+				paginas_leidas: Number(paginasLeidas)
+			})
+		});
+
+		return await procesarRespuesta(respuesta);
+	} catch (error) {
+		console.error('Error al registrar sesión de lectura:', error);
+		throw error;
+	}
+}
+
