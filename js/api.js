@@ -74,12 +74,15 @@ async function apiObtenerBiblioteca() {
 }
 
 // Función que solicita al backend importar un libro desde Gutenberg
-async function apiImportarGutenberg(gutenbergId) {
+async function apiImportarGutenberg(gutenbergId, datosLibro = {}) {
 	try {
 		const respuesta = await fetch(`${API_URL}/biblioteca/importar-gutendex`, {
 			method: 'POST',
 			headers: obtenerCabeceras(),
-			body: JSON.stringify({ gutenbergId: Number(gutenbergId) })
+			body: JSON.stringify({ 
+				gutenbergId: Number(gutenbergId),
+				...datosLibro
+			})
 		});
 
 		return await procesarRespuesta(respuesta);

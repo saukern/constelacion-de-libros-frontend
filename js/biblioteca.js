@@ -696,7 +696,27 @@ function renderizarResultadosGutenberg(books) {
 			importBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size: 16px;">sync</span> Importando...`;
 
 			try {
-				const resultado = await apiImportarGutenberg(book.id);
+				const formats = book.formats || {};
+				const epubKey = Object.keys(formats).find(key => key.toLowerCase().includes('epub'));
+				const epubUrl = epubKey ? formats[epubKey] : null;
+
+				const imageKey = Object.keys(formats).find(key => key.toLowerCase().includes('image/jpeg') || key.toLowerCase().includes('image/png'));
+				const rawImageUrl = imageKey ? formats[imageKey] : null;
+
+				const autor = book.authors && book.authors.length > 0
+					? book.authors.map(a => a.name).join(', ')
+					: 'Autor Desconocido';
+				const genero = book.subjects && book.subjects.length > 0
+					? book.subjects.slice(0, 2).join(', ')
+					: 'General';
+
+				const resultado = await apiImportarGutenberg(book.id, {
+					titulo: book.title,
+					autor,
+					genero,
+					epubUrl,
+					rawImageUrl
+				});
 
 				importBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size: 16px;">done</span> Importado`;
 				importBtn.style.borderColor = '#10b981';
