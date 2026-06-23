@@ -1,10 +1,12 @@
 // URL base del backend
 const API_URL = 'http://localhost:3000/api';
 
+// Función que obtiene el token de sesión guardado
 function obtenerToken() {
 	return localStorage.getItem('token');
 }
 
+// Función que genera las cabeceras HTTP incluyendo la autorización
 function obtenerCabeceras() {
 	const token = obtenerToken();
 	const cabeceras = {
@@ -16,6 +18,7 @@ function obtenerCabeceras() {
 	return cabeceras;
 }
 
+// Función que procesa y valida la respuesta del backend
 async function procesarRespuesta(respuesta) {
 	const contentType = respuesta.headers.get('content-type');
 	let datos;
@@ -32,7 +35,7 @@ async function procesarRespuesta(respuesta) {
 	return datos;
 }
 
-// Peticion GET al backend para obtener los libros reales del usuario
+// Función que obtiene los libros y documentos del usuario
 async function apiObtenerBiblioteca() {
 	try {
 		const respuesta = await fetch(`${API_URL}/biblioteca`, {
@@ -70,7 +73,7 @@ async function apiObtenerBiblioteca() {
 	}
 }
 
-// Peticion al Backend para importar un libro desde gutendex 
+// Función que solicita al backend importar un libro desde Gutenberg
 async function apiImportarGutenberg(gutenbergId) {
 	try {
 		const respuesta = await fetch(`${API_URL}/biblioteca/importar-gutendex`, {
@@ -86,7 +89,7 @@ async function apiImportarGutenberg(gutenbergId) {
 	}
 }
 
-// Peticion al backend para subir un libro o documento propio 
+// Función que sube un libro o documento propio
 async function apiSubirArchivo(formData) {
 	try {
 		const token = obtenerToken();
@@ -108,7 +111,7 @@ async function apiSubirArchivo(formData) {
 	}
 }
 
-// Peticion al backend para actualizar progreso 
+// Función que actualiza la página y el estado de lectura de un libro
 async function apiActualizarProgreso(progresoId, paginaActual, estadoLectura) {
 	try {
 		const cuerpo = {};
@@ -128,7 +131,7 @@ async function apiActualizarProgreso(progresoId, paginaActual, estadoLectura) {
 	}
 }
 
-// Petición al backend para crear una anotación/resaltado
+// Función que guarda un resaltado y nota en el servidor
 async function apiCrearAnotacion(anotacion) {
 	try {
 		const respuesta = await fetch(`${API_URL}/biblioteca/anotaciones`, {
@@ -144,7 +147,7 @@ async function apiCrearAnotacion(anotacion) {
 	}
 }
 
-// Petición al backend para obtener las anotaciones de un libro/progreso
+// Función que obtiene las notas guardadas de un libro
 async function apiObtenerAnotaciones(progresoUsuarioId) {
 	try {
 		const respuesta = await fetch(`${API_URL}/biblioteca/anotaciones/${progresoUsuarioId}`, {
@@ -159,7 +162,7 @@ async function apiObtenerAnotaciones(progresoUsuarioId) {
 	}
 }
 
-// Petición al backend para eliminar una anotación
+// Función que elimina una nota guardada
 async function apiEliminarAnotacion(anotacionId) {
 	try {
 		const respuesta = await fetch(`${API_URL}/biblioteca/anotaciones/${anotacionId}`, {
@@ -174,7 +177,7 @@ async function apiEliminarAnotacion(anotacionId) {
 	}
 }
 
-// Petición al backend para registrar una sesión de lectura finalizada (ej. Pomodoro)
+// Función que guarda una sesión de lectura completada
 async function apiRegistrarSesionLectura(progresoId, duracionMinutos, paginasLeidas) {
 	try {
 		const respuesta = await fetch(`${API_URL}/biblioteca/progreso/${progresoId}/sesion`, {
@@ -193,7 +196,7 @@ async function apiRegistrarSesionLectura(progresoId, duracionMinutos, paginasLei
 	}
 }
 
-// Petición al backend para editar los metadatos de un archivo
+// Función que edita los datos básicos de un archivo
 async function apiEditarArchivo(archivoId, metadatos) {
 	try {
 		const respuesta = await fetch(`${API_URL}/biblioteca/archivo/${archivoId}`, {
@@ -209,7 +212,7 @@ async function apiEditarArchivo(archivoId, metadatos) {
 	}
 }
 
-// Petición al backend para eliminar un registro de la biblioteca (progresoId)
+// Función que elimina un libro de tu biblioteca personal
 async function apiEliminarDeBiblioteca(progresoId) {
 	try {
 		const respuesta = await fetch(`${API_URL}/biblioteca/${progresoId}`, {
@@ -224,7 +227,7 @@ async function apiEliminarDeBiblioteca(progresoId) {
 	}
 }
 
-// Petición al backend para obtener los logros del usuario
+// Función que obtiene el listado de logros e insignias del usuario
 async function apiObtenerLogros() {
 	try {
 		const respuesta = await fetch(`${API_URL}/logros/logros`, {
@@ -239,7 +242,7 @@ async function apiObtenerLogros() {
 	}
 }
 
-// Petición al backend para obtener la meta literaria del usuario
+// Función que obtiene la meta literaria anual activa
 async function apiObtenerMeta(anio) {
 	try {
 		const url = anio ? `${API_URL}/logros/meta/${anio}` : `${API_URL}/logros/meta`;
@@ -255,7 +258,7 @@ async function apiObtenerMeta(anio) {
 	}
 }
 
-// Petición al backend para establecer la meta literaria
+// Función que establece el objetivo de libros de la meta anual
 async function apiEstablecerMeta(librosObjetivo, anio) {
 	try {
 		const cuerpo = { libros_objetivo: Number(librosObjetivo) };
