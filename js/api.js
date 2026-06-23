@@ -59,7 +59,8 @@ async function apiObtenerBiblioteca() {
 				linkLectura: archivo.url_nube,
 				formato: archivo.formato,
 				paginaActual: progreso.pagina_actual,
-				estadoLectura: progreso.estado_lectura
+				estadoLectura: progreso.estado_lectura,
+				tipo: esLibro ? 'libro' : 'documento'
 			};
 		});
 
