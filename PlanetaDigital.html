@@ -15,16 +15,19 @@
                 <span class="material-symbols-outlined">menu</span>
             </button>
             <div class="logo">
-    <img src="assets/logo.png" alt="Logo Constelación" class="logo-img">
-    Constelación de libros
-</div>
+                <img src="assets/logo.png" alt="Logo Constelación" class="logo-img">
+                Constelación de libros
+            </div>
+        </div>
         
         <div class="nav-right">
             <button id="upload-btn" class="btn-primary">
-                <span class="material-symbols-outlined">upload_file</span> Subir Libro
+                <span class="material-symbols-outlined">upload_file</span> 
+                <span class="text-desktop">Subir Libro</span>
             </button>
             <button id="logout-btn" class="btn-secondary">
-                <span class="material-symbols-outlined">logout</span> Salir
+                <span class="material-symbols-outlined">logout</span> 
+                <span class="text-desktop">Salir</span>
             </button>
         </div>
     </header>
@@ -53,9 +56,6 @@
         <section id="books-grid" class="books-grid"></section>
     </main>
 
-    
-
-    <!-- modal para subir libro o documento de forma manual -->
     <div id="upload-modal" class="modal">
         <div class="modal-header">
             <h3>Subir Archivo</h3>
@@ -76,7 +76,6 @@
                 <input type="text" id="upload-titulo" required placeholder="Ej: Las Crónicas de Narnia">
             </div>
             
-            <!-- campos especificos para el libro -->
             <div id="group-libro">
                 <div class="form-group">
                     <label for="upload-autor">Autor</label>
@@ -88,7 +87,6 @@
                 </div>
             </div>
 
-            <!-- campos especificos para el documento -->
             <div id="group-documento" style="display: none;">
                 <div class="form-group">
                     <label for="upload-materia">Materia</label>

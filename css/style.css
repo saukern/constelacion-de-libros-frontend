@@ -345,3 +345,112 @@ body {
     color: var(--text-muted);
     font-size: 0.85rem;
 }
+
+
+/* ==========================================
+   ESTILOS RESPONSIVOS (CELULAR Y LAPTOP)
+  
+
+/* --- AJUSTES PARA DISPOSITIVOS MÓVILES (Pantallas menores a 768px) --- */
+@media (max-width: 767px) {
+    /* Ocultar elementos marcados para desaparecer en celular */
+    .text-desktop {
+        display: none !important;
+    }
+
+    /* Navbar Responsiva */
+    .navbar {
+        padding: 0.75rem 1rem;
+    }
+    
+    .logo {
+        font-size: 1.1rem;
+        gap: 6px;
+    }
+
+    .logo-img {
+        height: 30px;
+    }
+
+    .nav-right {
+        gap: 0.5rem;
+    }
+
+    /* Botones más compactos en móvil */
+    .btn-primary, .btn-secondary {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+        gap: 0.25rem;
+    }
+
+    /* Cuadrícula de libros en celular (2 columnas adaptables) */
+    .books-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 1rem;
+    }
+
+    .main-content {
+        margin-top: 5rem;
+        padding: 1rem;
+    }
+
+    #section-title {
+        font-size: 1.4rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Modales responsivos */
+    .modal {
+        width: 95%;
+        padding: 1.25rem;
+    }
+}
+
+/* --- AJUSTES ADICIONALES PARA LOGIN/REGISTRO EN MÓVIL --- */
+@media (max-width: 480px) {
+    .login-card {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+}
+
+/* --- Ajustes responsivos internos del Lector --- */
+        @media (max-width: 767px) {
+            .reader-header {
+                padding: 0.5rem 0.75rem;
+            }
+
+            .reader-title-area h3 {
+                max-width: 110px; /* Evita que el título rompa la barra en celulares */
+                font-size: 0.9rem;
+            }
+
+            .reader-progress-area {
+                font-size: 0.8rem;
+                gap: 0.25rem;
+            }
+
+            .reader-progress-area input {
+                width: 45px;
+                padding: 0.2rem;
+            }
+
+            #epub-area {
+                height: 95%;
+                padding: 0.5rem;
+                border-radius: 0;
+            }
+
+            /* Reposiciona las flechas del EPUB abajo para no estorbar la lectura táctil */
+            .epub-nav-btn {
+                top: auto;
+                bottom: 15px;
+                transform: none;
+                padding: 0.5rem;
+            }
+            .epub-nav-btn:hover {
+                transform: scale(1.1);
+            }
+            .epub-nav-btn.prev { left: 15px; }
+            .epub-nav-btn.next { right: 15px; }
+        }

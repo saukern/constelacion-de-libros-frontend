@@ -124,12 +124,51 @@
         .epub-nav-btn.next {
             right: 1rem;
         }
+
+        /* --- Ajustes responsivos internos del Lector (Móvil) --- */
+        @media (max-width: 767px) {
+            .reader-header {
+                padding: 0.5rem 0.75rem;
+            }
+
+            .reader-title-area h3 {
+                max-width: 110px;
+                font-size: 0.9rem;
+            }
+
+            .reader-progress-area {
+                font-size: 0.8rem;
+                gap: 0.25rem;
+            }
+
+            .reader-progress-area input {
+                width: 45px;
+                padding: 0.2rem;
+            }
+
+            #epub-area {
+                height: 95%;
+                padding: 0.5rem;
+                border-radius: 0;
+            }
+
+            .epub-nav-btn {
+                top: auto;
+                bottom: 15px;
+                transform: none;
+                padding: 0.5rem;
+            }
+            .epub-nav-btn:hover {
+                transform: scale(1.1);
+            }
+            .epub-nav-btn.prev { left: 15px; }
+            .epub-nav-btn.next { right: 15px; }
+        }
     </style>
 </head>
 <body>
 
     <div class="reader-container">
-        <!-- Barra superior del visor -->
         <header class="reader-header">
             <div class="reader-title-area">
                 <button id="back-btn" class="icon-btn">
@@ -147,12 +186,9 @@
             </div>
         </header>
 
-        <!-- Contenedor del contenido -->
         <main class="reader-content">
-            <!-- Visor de PDF (Iframe nativo) -->
             <iframe id="pdf-frame" src=""></iframe>
 
-            <!-- Visor de EPUB (Epub.js) -->
             <div id="epub-area">
                 <button id="epub-prev" class="epub-nav-btn prev">
                     <span class="material-symbols-outlined">chevron_left</span>
@@ -167,11 +203,9 @@
         </main>
     </div>
 
-    <!-- Cargar Epub.js de forma asíncrona -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js"></script>
     
-    <!-- Cargar API y Lógica del lector -->
     <script src="js/api.js"></script>
     <script src="js/lector.js"></script>
 </body>
