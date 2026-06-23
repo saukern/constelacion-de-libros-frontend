@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Constelación de Libros</title>
+	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet"
+		href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" />
+</head>
+
+<body>
+
+	<!-- Barra de navegacion superior -->
+	<header class="navbar">
+		<div class="nav-left">
+			<button id="menu-toggle" class="icon-btn">
+				<span class="material-symbols-outlined">menu</span>
+			</button>
+			<div class="logo">
+				<img src="assets/logo.png" alt="Logo Constelación" class="logo-img">
+				Constelación de libros
+			</div>
+		</div>
+
+		<div class="nav-right">
+			<button id="upload-btn" class="btn-primary">
+				<span class="material-symbols-outlined">upload_file</span>
+				<span class="text-desktop">Subir Libro</span>
+			</button>
+			<button id="logout-btn" class="btn-secondary">
+				<span class="material-symbols-outlined">logout</span>
+				<span class="text-desktop">Salir</span>
+			</button>
+		</div>
+	</header>
+
+	<!-- Menu lateral de categorías -->
+	<aside id="sidebar" class="sidebar">
+		<div class="sidebar-header">
+			<h3>Géneros</h3>
+			<button id="close-sidebar" class="icon-btn">
+				<span class="material-symbols-outlined">close</span>
+			</button>
+		</div>
+		<ul class="genre-list">
+			<li><a href="#" class="genre-item active" data-genre="todos">✨ Todos los libros</a></li>
+			<li><a href="#" class="genre-item" data-genre="Ficción">🚀 Ficción</a></li>
+			<li><a href="#" class="genre-item" data-genre="Fantasía">🔮 Fantasía</a></li>
+			<li><a href="#" class="genre-item" data-genre="Ciencia Ficción">🌌 Ciencia Ficción</a></li>
+			<li><a href="#" class="genre-item" data-genre="Misterio">🕵️‍♂️ Misterio</a></li>
+			<li><a href="#" class="genre-item" data-genre="No Ficción">📖 No Ficción</a></li>
+		</ul>
+	</aside>
+
+	<!-- Fondo de superposición (Overlay) -->
+	<div id="overlay" class="overlay"></div>
+
+	<main class="main-content">
+		<h2 id="section-title">Mi Biblioteca Personal</h2>
+
+		<div class="library-tabs">
+			<button class="tab-btn active" data-tab="todos">
+				<span class="material-symbols-outlined">grid_view</span>
+				Todos los Archivos
+			</button>
+			<button class="tab-btn" data-tab="libros">
+				<span class="material-symbols-outlined">book</span>
+				Mis Libros
+			</button>
+			<button class="tab-btn" data-tab="documentos">
+				<span class="material-symbols-outlined">description</span>
+				Mis Documentos
+			</button>
+			<button class="tab-btn" data-tab="descubrir">
+				<span class="material-symbols-outlined">language</span>
+				Descubrir Gutenberg
+			</button>
+			<button class="tab-btn" data-tab="logros">
+				<span class="material-symbols-outlined">emoji_events</span>
+				Logros y Metas
+			</button>
+		</div>
+
+		<!-- Cuadrícula de libros y documentos -->
+		<section id="books-grid" class="books-grid"></section>
+
+		<!-- Buscador de Gutenberg -->
+		<div id="discover-area" class="discover-area" style="display: none;">
+			<div class="search-bar-container">
+				<input type="text" id="search-input" placeholder="Buscar libros por título o autor en Gutenberg...">
+				<button id="search-btn" class="btn-primary">
+					<span class="material-symbols-outlined">search</span>
+					Buscar
+				</button>
+			</div>
+			<h3 id="discover-title"
+				style="font-size: 1.2rem; font-weight: 600; color: var(--text-main); margin-top: 0.5rem;">Libros
+				Populares</h3>
+			<div id="discover-results" class="books-grid"></div>
+		</div>
+
+		<!-- Panel de metas y logros -->
+		<div id="logros-area" class="logros-area" style="display: none;">
+			<div class="meta-container card-panel">
+				<div class="meta-header">
+					<h3>🏆 Meta Literaria de Lectura</h3>
+					<p class="meta-subtitle">Establece cuántos libros o documentos planeas completar este año.</p>
+				</div>
+				<div class="meta-body">
+					<div class="meta-stats">
+						<div class="stat-card">
+							<span class="stat-num" id="meta-objetivo">0</span>
+							<span class="stat-lbl">Objetivo de Libros</span>
+						</div>
+						<div class="stat-card">
+							<span class="stat-num" id="meta-completados">0</span>
+							<span class="stat-lbl">Completados</span>
+						</div>
+						<div class="stat-card">
+							<span class="stat-num" id="meta-porcentaje">0%</span>
+							<span class="stat-lbl">Progreso</span>
+						</div>
+					</div>
+					<div class="progress-bar-container">
+						<div class="progress-bar-fill" id="meta-progress-fill" style="width: 0%;"></div>
+					</div>
+					<div class="meta-form-container">
+						<input type="number" id="meta-input" min="1" placeholder="Ej: 5" style="width: 100px;">
+						<button id="meta-btn" class="btn-primary">
+							Establecer Meta
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="logros-section">
+				<h3 class="section-subtitle">🌟 Insignias y Logros</h3>
+				<div id="logros-grid" class="logros-grid"></div>
+			</div>
+		</div>
+	</main>
+
+	<!-- Modal para subir archivos -->
+	<div id="upload-modal" class="modal">
+		<div class="modal-header">
+			<h3>Subir Archivo</h3>
+			<button id="close-modal" class="icon-btn">
+				<span class="material-symbols-outlined">close</span>
+			</button>
+		</div>
+		<form id="upload-form">
+			<div class="form-group">
+				<label for="upload-tipo">Tipo</label>
+				<select id="upload-tipo" required>
+					<option value="libro">Libro</option>
+					<option value="documento">Documento</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label for="upload-titulo">Título*</label>
+				<input type="text" id="upload-titulo" required placeholder="Ej: Las Crónicas de Narnia">
+			</div>
+
+			<div id="group-libro">
+				<div class="form-group">
+					<label for="upload-autor">Autor</label>
+					<input type="text" id="upload-autor" placeholder="Ej: C.S. Lewis">
+				</div>
+				<div class="form-group">
+					<label for="upload-genero">Género</label>
+					<input type="text" id="upload-genero" placeholder="Ej: Fantasía">
+				</div>
+			</div>
+
+			<div id="group-documento" style="display: none;">
+				<div class="form-group">
+					<label for="upload-materia">Materia</label>
+					<input type="text" id="upload-materia" placeholder="Ej: Tecnologías Web">
+				</div>
+				<div class="form-group">
+					<label for="upload-tipo-doc">Tipo de Documento</label>
+					<select id="upload-tipo-doc">
+						<option value="OTRO">Otro</option>
+						<option value="DIAPOSITIVAS">Diapositivas</option>
+						<option value="TAREA">Tarea</option>
+						<option value="NOTAS">Notas</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="upload-archivo">Archivo (PDF, EPUB)*</label>
+				<input type="file" id="upload-archivo" accept=".pdf,.epub" required>
+			</div>
+			<div class="form-group">
+				<label for="upload-portada">Portada (Imagen)</label>
+				<input type="file" id="upload-portada" accept="image/*">
+			</div>
+			<div class="modal-footer">
+				<button type="button" id="btn-cancelar-upload" class="btn-secondary">Cancelar</button>
+				<button type="submit" class="btn-primary">Subir Archivo</button>
+			</div>
+		</form>
+	</div>
+
+	<!-- Modal para editar metadatos -->
+	<div id="edit-modal" class="modal">
+		<div class="modal-header">
+			<h3>Editar Metadatos</h3>
+			<button id="close-edit-modal" class="icon-btn">
+				<span class="material-symbols-outlined">close</span>
+			</button>
+		</div>
+		<form id="edit-form">
+			<input type="hidden" id="edit-id">
+			<input type="hidden" id="edit-tipo">
+			<input type="hidden" id="edit-progreso-id">
+			<div class="form-group">
+				<label for="edit-estado">Estado de Lectura</label>
+				<select id="edit-estado">
+					<option value="WANT_TO_READ">✨ Quiero leer</option>
+					<option value="READING">📖 Leyendo</option>
+					<option value="COMPLETED">✅ Leído</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label for="edit-titulo">Título*</label>
+				<input type="text" id="edit-titulo" required placeholder="Ej: Las Crónicas de Narnia">
+			</div>
+
+			<div id="edit-group-libro">
+				<div class="form-group">
+					<label for="edit-autor">Autor</label>
+					<input type="text" id="edit-autor" placeholder="Ej: C.S. Lewis">
+				</div>
+				<div class="form-group">
+					<label for="edit-genero">Género</label>
+					<input type="text" id="edit-genero" placeholder="Ej: Fantasía">
+				</div>
+			</div>
+
+			<div id="edit-group-documento" style="display: none;">
+				<div class="form-group">
+					<label for="edit-materia">Materia</label>
+					<input type="text" id="edit-materia" placeholder="Ej: Tecnologías Web">
+				</div>
+				<div class="form-group">
+					<label for="edit-tipo-doc">Tipo de Documento</label>
+					<select id="edit-tipo-doc">
+						<option value="OTRO">Otro</option>
+						<option value="DIAPOSITIVAS">Diapositivas</option>
+						<option value="TAREA">Tarea</option>
+						<option value="NOTAS">Notas</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="modal-footer">
+				<button type="button" id="btn-cancelar-edit" class="btn-secondary">Cancelar</button>
+				<button type="submit" class="btn-primary">Guardar Cambios</button>
+			</div>
+		</form>
+	</div>
+
+	<!-- Modal de confirmación de acciones -->
+	<div id="confirm-modal" class="modal">
+		<div class="modal-header">
+			<h3 id="confirm-title">Confirmación</h3>
+			<button id="close-confirm-modal" class="icon-btn">
+				<span class="material-symbols-outlined">close</span>
+			</button>
+		</div>
+		<div style="margin-bottom: 1.5rem;">
+			<p id="confirm-message" style="color: var(--text-muted); line-height: 1.5; font-size: 0.95rem;"></p>
+		</div>
+		<div class="modal-footer" style="margin-top: 0;">
+			<button type="button" id="btn-confirm-no" class="btn-secondary">Cancelar</button>
+			<button type="button" id="btn-confirm-yes" class="btn-primary"
+				style="background-color: #ef4444; border: none;">Confirmar</button>
+		</div>
+	</div>
+
+	<!-- Contenedor para notificaciones Toast -->
+	<div id="toast-container" class="toast-container"></div>
+
+	<script src="js/api.js"></script>
+	<script src="js/biblioteca.js"></script>
+</body>
+
+</html>

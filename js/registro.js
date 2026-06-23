@@ -33,7 +33,7 @@ document.getElementById('registro-form').addEventListener('submit', async (e) =>
 
 		alert('¡Cuenta creada y sesión iniciada con éxito!');
 
-		window.location.href = 'PlanetaDigital.html';
+		window.location.href = 'biblioteca.html';
 
 	} catch (error) {
 		alert(`Error al registrarse: ${error.message}`);

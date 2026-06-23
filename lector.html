@@ -1,177 +1,185 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizador de Libros - Constelación de Libros</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/lector.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" />
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Visualizador de Libros - Constelación de Libros</title>
+	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="css/lector.css">
+	<link rel="stylesheet"
+		href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" />
 
 </head>
+
 <body>
 
-    <div class="reader-container">
-        <!-- Barra superior del visor -->
-        <header class="reader-header">
-            <div class="reader-title-area">
-                <button id="back-btn" class="icon-btn">
-                    <span class="material-symbols-outlined">arrow_back</span>
-                </button>
-                <h3 id="book-title">Título del Libro</h3>
-            </div>
-            
-            <div class="reader-progress-area">
-                <label for="page-input">Página:</label>
-                <input type="number" id="page-input" min="0" value="0">
-                <button id="btn-save-progress" class="btn-primary" style="padding: 0.35rem 0.85rem; font-size: 0.8rem;">
-                    Guardar
-                </button>
-                <button id="btn-annotations-toggle" class="icon-btn" title="Ver anotaciones y notas" style="margin-left: 0.5rem; display: flex; align-items: center; justify-content: center;">
-                    <span class="material-symbols-outlined">sticky_note_2</span>
-                </button>
-                <button id="btn-pomodoro-toggle" class="icon-btn" title="Temporizador Pomodoro" style="margin-left: 0.5rem; display: flex; align-items: center; justify-content: center;">
-                    <span class="material-symbols-outlined">timer</span>
-                </button>
-            </div>
-        </header>
+	<div class="reader-container">
+		<!-- Barra superior con titulo, progreso y botones -->
+		<header class="reader-header">
+			<div class="reader-title-area">
+				<button id="back-btn" class="icon-btn">
+					<span class="material-symbols-outlined">arrow_back</span>
+				</button>
+				<h3 id="book-title">Título del Libro</h3>
+			</div>
 
-        <!-- Controles específicos de EPUB -->
-        <div id="epub-controls" class="epub-controls-bar" style="display: none;">
-            <!-- Ajuste de fuente -->
-            <div class="control-group">
-                <span class="material-symbols-outlined" style="font-size: 18px;">text_fields</span>
-                <button id="font-decrease" class="btn-icon-small">
-                    <span class="material-symbols-outlined" style="font-size: 14px;">remove</span>
-                </button>
-                <span id="font-size-label">100%</span>
-                <button id="font-increase" class="btn-icon-small">
-                    <span class="material-symbols-outlined" style="font-size: 14px;">add</span>
-                </button>
-            </div>
+			<div class="reader-progress-area">
+				<label for="page-input">Página:</label>
+				<input type="number" id="page-input" min="0" value="0">
+				<button id="btn-save-progress" class="btn-primary" style="padding: 0.35rem 0.85rem; font-size: 0.8rem;">
+					Guardar
+				</button>
+				<button id="btn-annotations-toggle" class="icon-btn" title="Ver anotaciones y notas"
+					style="margin-left: 0.5rem; display: flex; align-items: center; justify-content: center;">
+					<span class="material-symbols-outlined">sticky_note_2</span>
+				</button>
+				<button id="btn-pomodoro-toggle" class="icon-btn" title="Temporizador Pomodoro"
+					style="margin-left: 0.5rem; display: flex; align-items: center; justify-content: center;">
+					<span class="material-symbols-outlined">timer</span>
+				</button>
+			</div>
+		</header>
 
-            <!-- Familia tipográfica -->
-            <div class="control-group">
-                <label for="font-family-select">Fuente:</label>
-                <select id="font-family-select" class="select-small">
-                    <option value="sans-serif">Sans-Serif</option>
-                    <option value="serif">Serif (Lectura)</option>
-                    <option value="monospace">Monospace</option>
-                </select>
-            </div>
+		<!-- Controles de EPUB: tamaño de fuente, tipografia y tema -->
+		<div id="epub-controls" class="epub-controls-bar" style="display: none;">
+			<!-- Tamaño de fuente -->
+			<div class="control-group">
+				<span class="material-symbols-outlined" style="font-size: 18px;">text_fields</span>
+				<button id="font-decrease" class="btn-icon-small">
+					<span class="material-symbols-outlined" style="font-size: 14px;">remove</span>
+				</button>
+				<span id="font-size-label">100%</span>
+				<button id="font-increase" class="btn-icon-small">
+					<span class="material-symbols-outlined" style="font-size: 14px;">add</span>
+				</button>
+			</div>
 
-            <!-- Temas de fondo -->
-            <div class="theme-buttons">
-                <button id="theme-light" class="theme-btn theme-btn-light active" title="Modo Claro">A</button>
-                <button id="theme-sepia" class="theme-btn theme-btn-sepia" title="Modo Sepia">A</button>
-                <button id="theme-dark" class="theme-btn theme-btn-dark" title="Modo Oscuro">A</button>
-            </div>
-        </div>
+			<!-- Tipo de fuente -->
+			<div class="control-group">
+				<label for="font-family-select">Fuente:</label>
+				<select id="font-family-select" class="select-small">
+					<option value="sans-serif">Sans-Serif</option>
+					<option value="serif">Serif (Lectura)</option>
+					<option value="monospace">Monospace</option>
+				</select>
+			</div>
 
-        <!-- Barra de Temporizador Pomodoro -->
-        <div id="pomodoro-bar" class="pomodoro-bar" style="display: none;">
-            <div class="pomodoro-content">
-                <div class="pomodoro-info">
-                    <span id="pomodoro-label" class="pomodoro-label">Sesión de Lectura</span>
-                    <span id="pomodoro-timer" class="pomodoro-timer">25:00</span>
-                </div>
-                <div class="pomodoro-controls">
-                    <button id="pomodoro-play-btn" class="btn-icon-small" title="Iniciar/Pausar">
-                        <span class="material-symbols-outlined" style="font-size: 18px;">play_arrow</span>
-                    </button>
-                    <button id="pomodoro-reset-btn" class="btn-icon-small" title="Reiniciar">
-                        <span class="material-symbols-outlined" style="font-size: 18px;">refresh</span>
-                    </button>
-                </div>
-                <div class="pomodoro-options">
-                    <button class="pomodoro-opt-btn active" data-time="1500" data-label="Sesión de Lectura">25m</button>
-                    <button class="pomodoro-opt-btn" data-time="300" data-label="Descanso Corto">5m</button>
-                    <button class="pomodoro-opt-btn" data-time="900" data-label="Descanso Largo">15m</button>
-                </div>
-            </div>
-        </div>
+			<!-- Tema claro, sepia u oscuro -->
+			<div class="theme-buttons">
+				<button id="theme-light" class="theme-btn theme-btn-light active" title="Modo Claro">A</button>
+				<button id="theme-sepia" class="theme-btn theme-btn-sepia" title="Modo Sepia">A</button>
+				<button id="theme-dark" class="theme-btn theme-btn-dark" title="Modo Oscuro">A</button>
+			</div>
+		</div>
 
-        <main class="reader-content">
-            <!-- Visor de PDF (PDF.js Canvas Renderer) -->
-            <div id="pdf-area" class="pdf-viewer-container" style="display: none;">
-                <div id="pdf-viewer"></div>
-            </div>
+		<!-- Temporizador Pomodoro -->
+		<div id="pomodoro-bar" class="pomodoro-bar" style="display: none;">
+			<div class="pomodoro-content">
+				<div class="pomodoro-info">
+					<span id="pomodoro-label" class="pomodoro-label">Sesión de Lectura</span>
+					<span id="pomodoro-timer" class="pomodoro-timer">25:00</span>
+				</div>
+				<div class="pomodoro-controls">
+					<button id="pomodoro-play-btn" class="btn-icon-small" title="Iniciar/Pausar">
+						<span class="material-symbols-outlined" style="font-size: 18px;">play_arrow</span>
+					</button>
+					<button id="pomodoro-reset-btn" class="btn-icon-small" title="Reiniciar">
+						<span class="material-symbols-outlined" style="font-size: 18px;">refresh</span>
+					</button>
+				</div>
+				<div class="pomodoro-options">
+					<button class="pomodoro-opt-btn active" data-time="1500" data-label="Sesión de Lectura">25m</button>
+					<button class="pomodoro-opt-btn" data-time="300" data-label="Descanso Corto">5m</button>
+					<button class="pomodoro-opt-btn" data-time="900" data-label="Descanso Largo">15m</button>
+				</div>
+			</div>
+		</div>
 
-            <div id="epub-area">
-                <button id="epub-prev" class="epub-nav-btn prev">
-                    <span class="material-symbols-outlined">chevron_left</span>
-                </button>
-                
-                <div id="epub-viewer"></div>
+		<main class="reader-content">
+			<!-- Visor de PDF -->
+			<div id="pdf-area" class="pdf-viewer-container" style="display: none;">
+				<div id="pdf-viewer"></div>
+			</div>
 
-                <button id="epub-next" class="epub-nav-btn next">
-                    <span class="material-symbols-outlined">chevron_right</span>
-                </button>
-            </div>
-        </main>
-    </div>
+			<div id="epub-area">
+				<button id="epub-prev" class="epub-nav-btn prev">
+					<span class="material-symbols-outlined">chevron_left</span>
+				</button>
 
-    <!-- Panel Lateral de Anotaciones -->
-    <div id="annotations-sidebar" class="annotations-sidebar">
-        <div class="sidebar-header">
-            <h4>Mis Notas y Resaltados</h4>
-            <button id="close-sidebar-btn" class="icon-btn-small">
-                <span class="material-symbols-outlined" style="font-size: 18px;">close</span>
-            </button>
-        </div>
-        <div id="annotations-list" class="sidebar-content">
-            <!-- Las anotaciones se cargarán aquí dinámicamente -->
-            <p class="no-annotations">No hay anotaciones aún. Selecciona texto en el EPUB para resaltar y agregar notas.</p>
-        </div>
-    </div>
+				<div id="epub-viewer"></div>
 
-    <!-- Popover Flotante de Anotación (EPUB) -->
-    <div id="annotation-popover" class="annotation-popover" style="display: none;">
-        <div class="popover-arrow"></div>
-        <div class="popover-colors">
-            <button class="color-dot yellow active" data-color="#ffeb3b" title="Amarillo"></button>
-            <button class="color-dot green" data-color="#a5d6a7" title="Verde"></button>
-            <button class="color-dot pink" data-color="#f8bbd0" title="Rosa"></button>
-            <button class="color-dot blue" data-color="#90caf9" title="Azul"></button>
-        </div>
-        <div class="popover-note-area">
-            <textarea id="popover-note-text" placeholder="Agregar una nota (opcional)..." rows="2"></textarea>
-        </div>
-        <div class="popover-actions">
-            <button id="popover-cancel-btn" class="btn-text-small">Cancelar</button>
-            <button id="popover-save-btn" class="btn-primary-small">Guardar</button>
-        </div>
-    </div>
+				<button id="epub-next" class="epub-nav-btn next">
+					<span class="material-symbols-outlined">chevron_right</span>
+				</button>
+			</div>
+		</main>
+	</div>
 
-    <!-- Fondo de superposición (Overlay) -->
-    <div id="overlay" class="overlay"></div>
+	<!-- Panel lateral de anotaciones -->
+	<div id="annotations-sidebar" class="annotations-sidebar">
+		<div class="sidebar-header">
+			<h4>Mis Notas y Resaltados</h4>
+			<button id="close-sidebar-btn" class="icon-btn-small">
+				<span class="material-symbols-outlined" style="font-size: 18px;">close</span>
+			</button>
+		</div>
+		<div id="annotations-list" class="sidebar-content">
+			<!-- Las anotaciones se cargan aqui desde JS -->
+			<p class="no-annotations">No hay anotaciones aún. Selecciona texto en el EPUB para resaltar y agregar notas.
+			</p>
+		</div>
+	</div>
 
-    <!-- Modal de Confirmación Estilo Constelación -->
-    <div id="confirm-modal" class="modal">
-        <div class="modal-header">
-            <h3 id="confirm-title">Confirmación</h3>
-            <button id="close-confirm-modal" class="icon-btn">
-                <span class="material-symbols-outlined">close</span>
-            </button>
-        </div>
-        <div style="margin-bottom: 1.5rem;">
-            <p id="confirm-message" style="color: var(--text-muted); line-height: 1.5; font-size: 0.95rem;"></p>
-        </div>
-        <div class="modal-footer" style="margin-top: 0;">
-            <button type="button" id="btn-confirm-no" class="btn-secondary">Cancelar</button>
-            <button type="button" id="btn-confirm-yes" class="btn-primary" style="background-color: #ef4444; border: none;">Confirmar</button>
-        </div>
-    </div>
+	<!-- Ventana para crear anotaciones al seleccionar texto -->
+	<div id="annotation-popover" class="annotation-popover" style="display: none;">
+		<div class="popover-arrow"></div>
+		<div class="popover-colors">
+			<button class="color-dot yellow active" data-color="#ffeb3b" title="Amarillo"></button>
+			<button class="color-dot green" data-color="#a5d6a7" title="Verde"></button>
+			<button class="color-dot pink" data-color="#f8bbd0" title="Rosa"></button>
+			<button class="color-dot blue" data-color="#90caf9" title="Azul"></button>
+		</div>
+		<div class="popover-note-area">
+			<textarea id="popover-note-text" placeholder="Agregar una nota (opcional)..." rows="2"></textarea>
+		</div>
+		<div class="popover-actions">
+			<button id="popover-cancel-btn" class="btn-text-small">Cancelar</button>
+			<button id="popover-save-btn" class="btn-primary-small">Guardar</button>
+		</div>
+	</div>
 
-    <!-- Contenedor para notificaciones Toast -->
-    <div id="toast-container" class="toast-container"></div>
+	<!-- Overlay de fondo -->
+	<div id="overlay" class="overlay"></div>
 
-    <!-- Librerías de soporte asíncronas para PDF y EPUB -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-    
-    <script src="js/api.js"></script>
-    <script src="js/lector.js"></script>
+	<!-- Modal de confirmacion -->
+	<div id="confirm-modal" class="modal">
+		<div class="modal-header">
+			<h3 id="confirm-title">Confirmación</h3>
+			<button id="close-confirm-modal" class="icon-btn">
+				<span class="material-symbols-outlined">close</span>
+			</button>
+		</div>
+		<div style="margin-bottom: 1.5rem;">
+			<p id="confirm-message" style="color: var(--text-muted); line-height: 1.5; font-size: 0.95rem;"></p>
+		</div>
+		<div class="modal-footer" style="margin-top: 0;">
+			<button type="button" id="btn-confirm-no" class="btn-secondary">Cancelar</button>
+			<button type="button" id="btn-confirm-yes" class="btn-primary"
+				style="background-color: #ef4444; border: none;">Confirmar</button>
+		</div>
+	</div>
+
+	<!-- Notificaciones toast -->
+	<div id="toast-container" class="toast-container"></div>
+
+	<!-- Librerias externas para PDF y EPUB -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
+	<script src="js/api.js"></script>
+	<script src="js/lector.js"></script>
 </body>
+
 </html>

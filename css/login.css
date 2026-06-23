@@ -1,13 +1,40 @@
-/*   Estilos de inicio de sesion */
+/* Estilos de la pagina de inicio de sesion */
 
+/* Logo y nombre de la app arriba de la tarjeta */
+.auth-brand {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.75rem;
+	margin-bottom: 2rem;
+}
+
+.auth-brand-logo {
+	height: 60px;
+	width: auto;
+	filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.5));
+}
+
+.auth-brand-name {
+	font-size: 1.5rem;
+	font-weight: 800;
+	letter-spacing: -0.03em;
+	background: linear-gradient(135deg, #ffffff 50%, var(--accent) 100%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
+
+/* Contenedor que centra la tarjeta en la pantalla */
 .login-container {
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	min-height: 100vh;
 	background-color: var(--bg-color);
 }
 
+/* Tarjeta principal del formulario */
 .login-card {
 	background-color: var(--surface-color);
 	padding: 2.5rem;
@@ -18,12 +45,14 @@
 	border: 1px solid var(--border-color);
 }
 
+/* Titulo de la tarjeta */
 .login-card h2 {
 	margin-bottom: 1.5rem;
 	font-weight: 600;
 	letter-spacing: -0.03em;
 }
 
+/* Cada campo del formulario (label + input) */
 .form-group {
 	margin-bottom: 1.25rem;
 }
@@ -50,6 +79,7 @@
 	border-color: var(--text-main);
 }
 
+/* Texto de "No tienes cuenta? Registrate" */
 .register-prompt {
 	text-align: center;
 	margin-top: 1.5rem;
@@ -57,12 +87,14 @@
 	color: var(--text-muted);
 }
 
+/* Link hacia registro */
 .register-link {
 	color: var(--text-main);
 	text-decoration: none;
 	font-weight: 500;
 }
 
+/* Separador con la palabra "o" entre login normal y Google */
 .divider {
 	display: flex;
 	align-items: center;
@@ -86,11 +118,13 @@
 	margin-left: 0.5rem;
 }
 
+/* Contenedor del boton de Google */
 .google-login-container {
 	display: flex;
 	justify-content: center;
 }
 
+/* Ajustes para celular */
 @media (max-width: 767px) {
 	.login-card {
 		padding: 1.75rem;

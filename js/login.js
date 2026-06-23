@@ -29,7 +29,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
 		localStorage.setItem('token', datos.token);
 		localStorage.setItem('sesionActiva', 'true');
 
-		window.location.href = 'PlanetaDigital.html';
+		window.location.href = 'biblioteca.html';
 
 	} catch (error) {
 		alert(`Error al iniciar sesión: ${error.message}`);
@@ -56,7 +56,7 @@ window.handleCredentialResponse = async (response) => {
 		localStorage.setItem('token', datos.token);
 		localStorage.setItem('sesionActiva', 'true');
 
-		window.location.href = 'PlanetaDigital.html';
+		window.location.href = 'biblioteca.html';
 
 	} catch (error) {
 		alert(`Error al iniciar sesión con Google: ${error.message}`);

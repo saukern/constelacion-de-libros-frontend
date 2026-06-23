@@ -489,7 +489,7 @@ document.getElementById('btn-save-progress')?.addEventListener('click', async ()
 
 // Vuelve a la biblioteca personal
 document.getElementById('back-btn')?.addEventListener('click', () => {
-	window.location.href = 'PlanetaDigital.html';
+	window.location.href = 'biblioteca.html';
 });
 
 // Función que carga y renderiza el PDF

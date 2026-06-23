@@ -104,17 +104,15 @@ overlay.addEventListener('click', cerrarMenu);
 // Función que normaliza y agrupa los géneros en categorías comunes
 function obtenerGeneroEstandar(generoRaw) {
 	if (!generoRaw) return 'Otros';
-	
+
 	const g = generoRaw.toLowerCase().trim();
-	
-	// Si ya es uno de los estándar en español, retornarlo directamente
+
 	if (g === 'ficción' || g === 'ficcion') return 'Ficción';
 	if (g === 'fantasía' || g === 'fantasia') return 'Fantasía';
 	if (g === 'ciencia ficción' || g === 'ciencia ficcion') return 'Ciencia Ficción';
 	if (g === 'misterio') return 'Misterio';
 	if (g === 'no ficción' || g === 'no ficcion') return 'No Ficción';
 
-	// Búsqueda por palabras clave en español o inglés
 	if (g.includes('ciencia ficción') || g.includes('science fiction') || g.includes('sci-fi')) {
 		return 'Ciencia Ficción';
 	}
@@ -130,7 +128,7 @@ function obtenerGeneroEstandar(generoRaw) {
 	if (g.includes('ficción') || g.includes('fiction') || g.includes('novel') || g.includes('drama') || g.includes('poetry') || g.includes('stories')) {
 		return 'Ficción';
 	}
-	
+
 	return 'Otros';
 }
 
@@ -231,7 +229,6 @@ function mostrarLibros(generoFiltrado = 'todos') {
 			confirmarEliminarLibro(libro);
 		});
 
-		// Clic en la tarjeta también abre el lector
 		tarjeta.addEventListener('click', () => {
 			abrirLector(libro);
 		});
@@ -261,7 +258,7 @@ function actualizarSidebar() {
 		sidebarHeader.textContent = 'Categorías';
 
 		let html = `<li><a href="#" class="genre-item active" data-genre="todos">✨ Todos los archivos</a></li>`;
-		
+
 		// Añadir géneros estándar de libros
 		generosLibrosPredefinidos.forEach(g => {
 			html += `<li><a href="#" class="genre-item" data-genre="${g.id}">${g.label}</a></li>`;
@@ -692,7 +689,7 @@ function renderizarResultadosGutenberg(books) {
 		const importBtn = card.querySelector('.btn-import-book');
 		importBtn.addEventListener('click', async (e) => {
 			e.stopPropagation();
-			
+
 			importBtn.disabled = true;
 			importBtn.classList.add('importing');
 			const textOriginal = importBtn.innerHTML;
@@ -700,7 +697,7 @@ function renderizarResultadosGutenberg(books) {
 
 			try {
 				const resultado = await apiImportarGutenberg(book.id);
-				
+
 				importBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size: 16px;">done</span> Importado`;
 				importBtn.style.borderColor = '#10b981';
 				importBtn.style.color = '#10b981';
@@ -801,7 +798,6 @@ async function cargarMetasYLogros() {
 		const logros = await apiObtenerLogros();
 		logrosGrid.innerHTML = '';
 
-		// Emojis según código de insignia
 		const emojisLogros = {
 			'PRIMER_PASO': '👣',
 			'DEVORADOR': '🐉',
@@ -817,7 +813,7 @@ async function cargarMetasYLogros() {
 			}
 
 			const emoji = emojisLogros[logro.codigo_insignia] || '🏆';
-			
+
 			let fechaHTML = '';
 			if (logro.desbloqueado && logro.desbloqueado_en) {
 				const fecha = new Date(logro.desbloqueado_en).toLocaleDateString('es-ES', {
@@ -862,10 +858,9 @@ metaBtn?.addEventListener('click', async () => {
 		metaBtn.disabled = true;
 		const resultado = await apiEstablecerMeta(librosObjetivo);
 		metaBtn.disabled = false;
-		
+
 		mostrarToast(resultado.mensaje, 'success');
-		
-		// Si se desbloqueó algún logro al guardar la meta (ej. META_CUMPLIDA)
+
 		if (resultado.logros_desbloqueados && resultado.logros_desbloqueados.length > 0) {
 			const nombresLogros = resultado.logros_desbloqueados.map(l => l.nombre).join(', ');
 			mostrarToast(`¡Logros desbloqueados: ${nombresLogros}!`, 'success');
