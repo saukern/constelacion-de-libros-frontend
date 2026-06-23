@@ -1,13 +1,13 @@
-// CONTROL DE ACCESO (PROTECCIÓN LOGIN)
+// Redirige a login si la sesión no está activa
 if (localStorage.getItem('sesionActiva') !== 'true') {
 	window.location.href = 'login.html';
 }
 
-// DATOS DE PRUEBA INICIALES 
+// Estado global de la biblioteca
 let librosDisponibles = [];
 let activeTab = 'todos';
 
-// SISTEMA DE NOTIFICACIONES TOAST PERSONALIZADO
+// Muestra notificaciones flotantes en pantalla
 function mostrarToast(mensaje, tipo = 'success') {
 	const container = document.getElementById('toast-container');
 	if (!container) return;
@@ -36,7 +36,7 @@ function mostrarToast(mensaje, tipo = 'success') {
 	}, 4000);
 }
 
-// SISTEMA DE CONFIRMACIÓN PERSONALIZADO
+// Muestra un modal de confirmación personalizado
 let confirmModalCallback = null;
 
 const confirmModal = document.getElementById('confirm-modal');
@@ -73,7 +73,7 @@ confirmYesBtn?.addEventListener('click', () => {
 confirmNoBtn?.addEventListener('click', cerrarConfirmacion);
 closeConfirmModalBtn?.addEventListener('click', cerrarConfirmacion);
 
-// ELEMENTOS DEL DOM
+// Elementos del DOM utilizados
 const menuToggle = document.getElementById('menu-toggle');
 const closeSidebar = document.getElementById('close-sidebar');
 const sidebar = document.getElementById('sidebar');
@@ -83,7 +83,7 @@ const sectionTitle = document.getElementById('section-title');
 const genreItems = document.querySelectorAll('.genre-item');
 const uploadBtn = document.getElementById('upload-btn');
 
-// MANEJO DEL MENÚ LATERAL (INTERFAZ)
+// Controla la apertura y cierre del menú lateral
 function abrirMenu() {
 	sidebar.classList.add('open');
 	overlay.classList.add('show');
@@ -98,7 +98,7 @@ menuToggle.addEventListener('click', abrirMenu);
 closeSidebar.addEventListener('click', cerrarMenu);
 overlay.addEventListener('click', cerrarMenu);
 
-// NORMALIZADOR DE GÉNEROS (AGRUPACIÓN DE GÉNEROS EXTRAÑOS EN CATEGORÍAS ESTÁNDAR O "OTROS")
+// Agrupa géneros complejos en categorías estándar u "Otros"
 function obtenerGeneroEstandar(generoRaw) {
 	if (!generoRaw) return 'Otros';
 	
@@ -131,7 +131,7 @@ function obtenerGeneroEstandar(generoRaw) {
 	return 'Otros';
 }
 
-// RENDERIZADO DE TARJETAS DE LIBROS
+// Dibuja las tarjetas de libros y documentos en la pantalla
 function mostrarLibros(generoFiltrado = 'todos') {
 	booksGrid.innerHTML = '';
 
@@ -208,7 +208,7 @@ function mostrarLibros(generoFiltrado = 'todos') {
             <p class="book-author">${libro.autor}</p>
         `;
 
-		// Evitar propagación para las acciones individuales
+		// Evita abrir el lector al hacer clic en botones de acción
 		const readBtn = tarjeta.querySelector('.read-btn');
 		const editBtn = tarjeta.querySelector('.edit-btn');
 		const deleteBtn = tarjeta.querySelector('.delete-btn');
@@ -237,7 +237,7 @@ function mostrarLibros(generoFiltrado = 'todos') {
 	});
 }
 
-// ACTUALIZACIÓN DINÁMICA DEL SIDEBAR (GÉNEROS VS MATERIAS)
+// Actualiza dinámicamente las categorías del menú lateral
 function actualizarSidebar() {
 	const sidebarHeader = document.querySelector('.sidebar-header h3');
 	const genreList = document.querySelector('.genre-list');
@@ -332,7 +332,7 @@ function actualizarSidebar() {
 	});
 }
 
-// ABRIR EL LECTOR INTERNO
+// Abre el lector de libros o documentos
 function abrirLector(libro) {
 	console.log('Abriendo lector. Datos del libro/documento:', libro);
 	if (libro.linkLectura) {
@@ -345,7 +345,7 @@ function abrirLector(libro) {
 	}
 }
 
-// CONTROL DE EDICIÓN Y ELIMINACIÓN (CRUD)
+// Gestión de edición y eliminación de libros (CRUD)
 const editModal = document.getElementById('edit-modal');
 const closeEditModalBtn = document.getElementById('close-edit-modal');
 const cancelEditModalBtn = document.getElementById('btn-cancelar-edit');
@@ -468,12 +468,12 @@ async function confirmarEliminarLibro(libro) {
 	);
 }
 
-// CONTROL DE SUBIDA (SUBIR ARCHIVO PROPIO DIRECTAMENTE)
+// Control de subida de archivos propios
 uploadBtn.addEventListener('click', () => {
 	abrirModalUpload();
 });
 
-// ELEMENTOS DEL MODAL
+// Elementos del modal de subida
 const uploadModal = document.getElementById('upload-modal');
 const closeModalBtn = document.getElementById('close-modal');
 const cancelModalBtn = document.getElementById('btn-cancelar-upload');
@@ -583,7 +583,7 @@ uploadForm?.addEventListener('submit', async (e) => {
 	}
 });
 
-// ACCIÓN DE CERRAR SESIÓN
+// Cierra la sesión activa del usuario
 document.getElementById('logout-btn')?.addEventListener('click', (e) => {
 	e.preventDefault();
 	localStorage.removeItem('sesionActiva');
@@ -592,7 +592,7 @@ document.getElementById('logout-btn')?.addEventListener('click', (e) => {
 });
 
 
-// CONTROL DE PESTAÑAS (TABS)
+// Control de pestañas de navegación (Tabs)
 const tabButtons = document.querySelectorAll('.tab-btn');
 const discoverArea = document.getElementById('discover-area');
 const logrosArea = document.getElementById('logros-area');
@@ -645,7 +645,7 @@ tabButtons.forEach(btn => {
 	});
 });
 
-// BÚSQUEDA Y IMPORTACIÓN DESDE GUTENBERG
+// Búsqueda e importación de libros desde Gutenberg
 const searchInput = document.getElementById('search-input');
 const searchBtn = document.getElementById('search-btn');
 const discoverResults = document.getElementById('discover-results');
@@ -770,7 +770,7 @@ searchInput?.addEventListener('keydown', (e) => {
 	}
 });
 
-// CONTROL DE METAS Y LOGROS
+// Carga y gestión de metas literarias e insignias
 const logrosGrid = document.getElementById('logros-grid');
 const metaObjetivo = document.getElementById('meta-objetivo');
 const metaCompletados = document.getElementById('meta-completados');
@@ -881,7 +881,7 @@ async function cargarBiblioteca() {
 	}
 }
 
-// INICIALIZACIÓN
+// Carga inicial del panel al abrir la página
 document.addEventListener('DOMContentLoaded', () => {
 	cargarBiblioteca();
 });
