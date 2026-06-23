@@ -143,6 +143,29 @@
         </div>
     </div>
 
+    <!-- Fondo de superposición (Overlay) -->
+    <div id="overlay" class="overlay"></div>
+
+    <!-- Modal de Confirmación Estilo Constelación -->
+    <div id="confirm-modal" class="modal">
+        <div class="modal-header">
+            <h3 id="confirm-title">Confirmación</h3>
+            <button id="close-confirm-modal" class="icon-btn">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+            <p id="confirm-message" style="color: var(--text-muted); line-height: 1.5; font-size: 0.95rem;"></p>
+        </div>
+        <div class="modal-footer" style="margin-top: 0;">
+            <button type="button" id="btn-confirm-no" class="btn-secondary">Cancelar</button>
+            <button type="button" id="btn-confirm-yes" class="btn-primary" style="background-color: #ef4444; border: none;">Confirmar</button>
+        </div>
+    </div>
+
+    <!-- Contenedor para notificaciones Toast -->
+    <div id="toast-container" class="toast-container"></div>
+
     <!-- Librerías de soporte asíncronas para PDF y EPUB -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js"></script>

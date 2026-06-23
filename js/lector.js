@@ -33,6 +33,72 @@ let pomodoroIsRunning = false;
 let pomodoroStartPage = 0;
 let pomodoroActiveDuration = 1500;
 
+// SISTEMA DE NOTIFICACIONES TOAST PERSONALIZADO
+function mostrarToast(mensaje, tipo = 'success') {
+	const container = document.getElementById('toast-container');
+	if (!container) return;
+
+	const toast = document.createElement('div');
+	toast.classList.add('toast', tipo);
+
+	let icono = 'info';
+	if (tipo === 'success') icono = 'check_circle';
+	if (tipo === 'error') icono = 'error';
+
+	toast.innerHTML = `
+		<span class="material-symbols-outlined toast-icon ${tipo}">${icono}</span>
+		<span class="toast-message">${mensaje}</span>
+	`;
+
+	container.appendChild(toast);
+
+	// Remover toast después de 4 segundos con fade out
+	setTimeout(() => {
+		toast.style.opacity = '0';
+		toast.style.transform = 'translateY(-20px) scale(0.9)';
+		setTimeout(() => {
+			toast.remove();
+		}, 300);
+	}, 4000);
+}
+
+// SISTEMA DE CONFIRMACIÓN PERSONALIZADO
+let confirmModalCallback = null;
+
+const confirmModal = document.getElementById('confirm-modal');
+const confirmTitle = document.getElementById('confirm-title');
+const confirmMessage = document.getElementById('confirm-message');
+const confirmYesBtn = document.getElementById('btn-confirm-yes');
+const confirmNoBtn = document.getElementById('btn-confirm-no');
+const closeConfirmModalBtn = document.getElementById('close-confirm-modal');
+const overlay = document.getElementById('overlay');
+
+function mostrarConfirmacion(titulo, mensaje, alConfirmar) {
+	confirmTitle.textContent = titulo;
+	confirmMessage.textContent = mensaje;
+	confirmModalCallback = alConfirmar;
+
+	confirmModal.classList.add('show');
+	overlay.classList.add('show');
+}
+
+function cerrarConfirmacion() {
+	confirmModal.classList.remove('show');
+	overlay.classList.remove('show');
+	confirmModalCallback = null;
+}
+
+confirmYesBtn?.addEventListener('click', () => {
+	if (confirmModalCallback) {
+		confirmModalCallback();
+	}
+	cerrarConfirmacion();
+});
+
+confirmNoBtn?.addEventListener('click', cerrarConfirmacion);
+closeConfirmModalBtn?.addEventListener('click', cerrarConfirmacion);
+overlay?.addEventListener('click', cerrarConfirmacion);
+
 // Obtiene los parametros desde el hash de la URL
 function obtenerParametrosURL() {
 	const hash = window.location.hash.substring(1);
@@ -55,7 +121,7 @@ function inicializarLector() {
 	document.getElementById('page-input').value = paginaActual;
 
 	if (!url) {
-		alert(`Error: No se pudo obtener la dirección del archivo.`);
+		mostrarToast(`Error: No se pudo obtener la dirección del archivo.`, 'error');
 		return;
 	}
 
@@ -74,7 +140,7 @@ function inicializarLector() {
 		if (btnAnnotations) btnAnnotations.style.display = 'flex';
 		cargarEpub(url);
 	} else {
-		alert('Formato no soportado en el lector.');
+		mostrarToast('Formato no soportado en el lector.', 'error');
 	}
 }
 
@@ -191,7 +257,8 @@ function cargarEpub(url) {
 				const currentLoc = bookInstance.locations.locationFromCfi(location.start.cfi);
 				if (currentLoc !== undefined && currentLoc !== -1) {
 					document.getElementById('page-input').value = currentLoc;
-					autoGuardarProgreso(currentLoc);
+					const esUltimaPagina = location.atEnd || (currentLoc >= bookInstance.locations.total - 1);
+					autoGuardarProgreso(currentLoc, esUltimaPagina);
 				}
 			}
 		});
@@ -209,17 +276,27 @@ function cargarEpub(url) {
 
 	} catch (err) {
 		console.error('Error al inicializar el EPUB:', err);
-		alert('Error al abrir el visor de EPUB.');
+		mostrarToast('Error al abrir el visor de EPUB.', 'error');
 	}
 }
 
 // Guarda progreso de lectura en la base de datos con debounce
-function autoGuardarProgreso(pagina) {
+function autoGuardarProgreso(pagina, esUltimaPagina = false) {
 	clearTimeout(debounceTimeout);
 	debounceTimeout = setTimeout(async () => {
 		try {
-			await apiActualizarProgreso(progresoId, Number(pagina), 'READING');
-			console.log('Progreso auto-guardado en página:', pagina);
+			const nuevoEstado = esUltimaPagina ? 'COMPLETED' : 'READING';
+			const resultado = await apiActualizarProgreso(progresoId, Number(pagina), nuevoEstado);
+			console.log('Progreso auto-guardado en página:', pagina, 'Estado:', nuevoEstado);
+			
+			if (esUltimaPagina) {
+				mostrarToast('🎉 ¡Felicidades! Has terminado de leer este libro.', 'success');
+			}
+			
+			if (resultado.logros_desbloqueados && resultado.logros_desbloqueados.length > 0) {
+				const nombresLogros = resultado.logros_desbloqueados.map(l => l.nombre).join(', ');
+				mostrarToast(`🏆 ¡Logro desbloqueado!: ${nombresLogros}`, 'success');
+			}
 		} catch (err) {
 			console.error('Error en auto-guardado de progreso:', err);
 		}
@@ -364,7 +441,7 @@ function cambiarTema(tema) {
 document.getElementById('btn-save-progress')?.addEventListener('click', async () => {
 	const pagina = document.getElementById('page-input').value;
 	if (pagina === "" || Number(pagina) < 0) {
-		alert('Por favor introduce un número de página válido.');
+		mostrarToast('Por favor introduce un número de página válido.', 'error');
 		return;
 	}
 
@@ -374,20 +451,32 @@ document.getElementById('btn-save-progress')?.addEventListener('click', async ()
 		btn.disabled = true;
 		btn.textContent = 'Guardando...';
 
-		const resultado = await apiActualizarProgreso(progresoId, Number(pagina), 'READING');
+		let esUltimaPagina = false;
+		if (pdfDocInstance && Number(pagina) === pdfDocInstance.numPages) {
+			esUltimaPagina = true;
+		} else if (bookInstance && bookInstance.locations && bookInstance.locations.total > 0 && Number(pagina) >= bookInstance.locations.total - 1) {
+			esUltimaPagina = true;
+		}
+
+		const nuevoEstado = esUltimaPagina ? 'COMPLETED' : 'READING';
+		const resultado = await apiActualizarProgreso(progresoId, Number(pagina), nuevoEstado);
 
 		btn.disabled = false;
 		btn.textContent = originalText;
 
+		if (esUltimaPagina) {
+			mostrarToast('🎉 ¡Felicidades! Has terminado de leer este libro.', 'success');
+		} else {
+			mostrarToast('¡Progreso guardado con éxito!', 'success');
+		}
+
 		if (resultado.logros_desbloqueados && resultado.logros_desbloqueados.length > 0) {
 			const nombresLogros = resultado.logros_desbloqueados.map(l => l.nombre).join(', ');
-			alert(`${resultado.mensaje}\n\n¡Has desbloqueado logros!: ${nombresLogros}`);
-		} else {
-			alert('¡Progreso guardado con éxito!');
+			mostrarToast(`🏆 ¡Has desbloqueado logros!: ${nombresLogros}`, 'success');
 		}
 
 	} catch (err) {
-		alert(`Error al guardar el progreso: ${err.message}`);
+		mostrarToast(`Error al guardar el progreso: ${err.message}`, 'error');
 		const btn = document.getElementById('btn-save-progress');
 		if (btn) {
 			btn.disabled = false;
@@ -459,7 +548,7 @@ function cargarPdf(url, paginaInicial) {
 		});
 	}).catch(err => {
 		console.error('Error al cargar PDF con PDF.js:', err);
-		alert('Error al abrir el visor de PDF.');
+		mostrarToast('Error al abrir el visor de PDF.', 'error');
 	});
 }
 
@@ -481,7 +570,8 @@ function configurarObserverPdf() {
 				}
 
 				document.getElementById('page-input').value = pageNum;
-				autoGuardarProgreso(pageNum);
+				const esUltimaPagina = pdfDocInstance && (pageNum === pdfDocInstance.numPages);
+				autoGuardarProgreso(pageNum, esUltimaPagina);
 			}
 		});
 	}, options);
@@ -696,7 +786,7 @@ function inicializarEventosPopover() {
 
 		} catch (err) {
 			console.error('Error al guardar anotación:', err);
-			alert('Error al guardar la anotación: ' + err.message);
+			mostrarToast('Error al guardar la anotación: ' + err.message, 'error');
 		} finally {
 			const btn = document.getElementById('popover-save-btn');
 			if (btn) {
@@ -780,22 +870,27 @@ function renderizarListaSidebar() {
 		});
 
 		// Maneja la eliminacion de anotacion desde la tarjeta
-		card.querySelector('.btn-delete-annotation').addEventListener('click', async (e) => {
+		card.querySelector('.btn-delete-annotation').addEventListener('click', (e) => {
 			e.stopPropagation();
-			if (confirm('¿Estás seguro de que deseas eliminar este resaltado/nota?')) {
-				try {
-					await apiEliminarAnotacion(anotacion.id);
-					activeAnotaciones = activeAnotaciones.filter(a => a.id !== anotacion.id);
+			mostrarConfirmacion(
+				'Eliminar Anotación',
+				'¿Estás seguro de que deseas eliminar este resaltado/nota?',
+				async () => {
+					try {
+						await apiEliminarAnotacion(anotacion.id);
+						activeAnotaciones = activeAnotaciones.filter(a => a.id !== anotacion.id);
 
-					if (renditionInstance) {
-						renditionInstance.annotations.remove(anotacion.marcador_posicion, "highlight");
+						if (renditionInstance) {
+							renditionInstance.annotations.remove(anotacion.marcador_posicion, "highlight");
+						}
+
+						renderizarListaSidebar();
+						mostrarToast('Anotación eliminada con éxito.', 'success');
+					} catch (err) {
+						mostrarToast('Error al eliminar la anotación: ' + err.message, 'error');
 					}
-
-					renderizarListaSidebar();
-				} catch (err) {
-					alert('Error al eliminar la anotación: ' + err.message);
 				}
-			}
+			);
 		});
 
 		listEl.appendChild(card);
@@ -897,7 +992,7 @@ function iniciarPomodoro() {
 			if (isStudySession) {
 				finalizarSesionLecturaPomodoro();
 			} else {
-				alert('¡Descanso terminado! Es hora de volver a leer.');
+				mostrarToast('¡Descanso terminado! Es hora de volver a leer.', 'info');
 				reiniciarPomodoro();
 			}
 		}
@@ -971,28 +1066,25 @@ async function finalizarSesionLecturaPomodoro() {
 	const paginasLeidas = Math.max(0, endPage - pomodoroStartPage);
 	const duracionMinutos = Math.round(pomodoroActiveDuration / 60);
 
-	const confirmacion = confirm(`¡Felicidades! Completaste tu sesión de lectura de ${duracionMinutos} minutos.\n\n¿Quieres registrar esta sesión en tu historial de lectura?\nPáginas leídas calculadas: ${paginasLeidas}`);
-	
-	if (confirmacion) {
-		const paginasStr = prompt("Confirma la cantidad de páginas leídas en esta sesión:", paginasLeidas);
-		const paginas = paginasStr !== null ? Number(paginasStr) : paginasLeidas;
-
-		if (!isNaN(paginas) && paginas >= 0) {
+	mostrarConfirmacion(
+		'Registrar Sesión de Lectura',
+		`¡Felicidades! Completaste tu sesión de lectura de ${duracionMinutos} minutos. ¿Deseas registrar esta sesión en tu historial de lectura con ${paginasLeidas} páginas leídas?`,
+		async () => {
 			try {
-				const resultado = await apiRegistrarSesionLectura(progresoId, duracionMinutos, paginas);
+				const resultado = await apiRegistrarSesionLectura(progresoId, duracionMinutos, paginasLeidas);
 
 				if (resultado.logros_desbloqueados && resultado.logros_desbloqueados.length > 0) {
 					const nombresLogros = resultado.logros_desbloqueados.map(l => l.nombre).join(', ');
-					alert(`¡Sesión guardada con éxito!\n\n🏆 ¡HAS DESBLOQUEADO LOGROS!: ${nombresLogros}`);
+					mostrarToast(`¡Sesión guardada con éxito! 🏆 ¡HAS DESBLOQUEADO LOGROS!: ${nombresLogros}`, 'success');
 				} else {
-					alert("¡Sesión registrada correctamente en tu historial!");
+					mostrarToast('¡Sesión registrada correctamente en tu historial!', 'success');
 				}
 			} catch (err) {
 				console.error("Error al guardar sesión de lectura:", err);
-				alert("Error al guardar la sesión de lectura: " + err.message);
+				mostrarToast("Error al guardar la sesión de lectura: " + err.message, 'error');
 			}
 		}
-	}
+	);
 	reiniciarPomodoro();
 }
 

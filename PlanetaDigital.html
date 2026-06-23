@@ -71,6 +71,10 @@
                 <span class="material-symbols-outlined">language</span>
                 Descubrir Gutenberg
             </button>
+            <button class="tab-btn" data-tab="logros">
+                <span class="material-symbols-outlined">emoji_events</span>
+                Logros y Metas
+            </button>
         </div>
 
         <section id="books-grid" class="books-grid"></section>
@@ -85,6 +89,45 @@
             </div>
             <h3 id="discover-title" style="font-size: 1.2rem; font-weight: 600; color: var(--text-main); margin-top: 0.5rem;">Libros Populares</h3>
             <div id="discover-results" class="books-grid"></div>
+        </div>
+
+        <div id="logros-area" class="logros-area" style="display: none;">
+            <div class="meta-container card-panel">
+                <div class="meta-header">
+                    <h3>🏆 Meta Literaria de Lectura</h3>
+                    <p class="meta-subtitle">Establece cuántos libros o documentos planeas completar este año.</p>
+                </div>
+                <div class="meta-body">
+                    <div class="meta-stats">
+                        <div class="stat-card">
+                            <span class="stat-num" id="meta-objetivo">0</span>
+                            <span class="stat-lbl">Objetivo de Libros</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-num" id="meta-completados">0</span>
+                            <span class="stat-lbl">Completados</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-num" id="meta-porcentaje">0%</span>
+                            <span class="stat-lbl">Progreso</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="meta-progress-fill" style="width: 0%;"></div>
+                    </div>
+                    <div class="meta-form-container">
+                        <input type="number" id="meta-input" min="1" placeholder="Ej: 5" style="width: 100px;">
+                        <button id="meta-btn" class="btn-primary">
+                            Establecer Meta
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="logros-section">
+                <h3 class="section-subtitle">🌟 Insignias y Logros</h3>
+                <div id="logros-grid" class="logros-grid"></div>
+            </div>
         </div>
     </main>
 
@@ -160,6 +203,15 @@
         <form id="edit-form">
             <input type="hidden" id="edit-id">
             <input type="hidden" id="edit-tipo">
+            <input type="hidden" id="edit-progreso-id">
+            <div class="form-group">
+                <label for="edit-estado">Estado de Lectura</label>
+                <select id="edit-estado">
+                    <option value="WANT_TO_READ">✨ Quiero leer</option>
+                    <option value="READING">📖 Leyendo</option>
+                    <option value="COMPLETED">✅ Leído</option>
+                </select>
+            </div>
             <div class="form-group">
                 <label for="edit-titulo">Título*</label>
                 <input type="text" id="edit-titulo" required placeholder="Ej: Las Crónicas de Narnia">

@@ -709,4 +709,214 @@ body {
         opacity: 1;
         transform: translateY(0) scale(1);
     }
+}
+
+/* --- METAS Y LOGROS --- */
+.logros-area {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    width: 100%;
+}
+
+.card-panel {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+.meta-header h3 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.meta-subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.meta-stats {
+    display: flex;
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+    flex-wrap: wrap;
+}
+
+.stat-card {
+    flex: 1;
+    min-width: 120px;
+    background-color: rgba(15, 23, 42, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-num {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--accent);
+}
+
+.stat-lbl {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.25rem;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 12px;
+    background-color: rgba(15, 23, 42, 0.6);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #6366f1);
+    border-radius: 6px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.meta-form-container {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.meta-form-container input {
+    background-color: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.6rem 0.75rem;
+    color: var(--text-main);
+    font-size: 0.95rem;
+    outline: none;
+    transition: var(--transition);
+}
+
+.meta-form-container input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.2);
+}
+
+.section-subtitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+    letter-spacing: -0.01em;
+}
+
+.logros-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+.logro-card {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: var(--transition);
+    opacity: 0.6;
+    filter: grayscale(100%);
+}
+
+.logro-card.unlocked {
+    opacity: 1;
+    filter: none;
+    border-color: rgba(251, 191, 36, 0.4);
+    box-shadow: 0 4px 20px -5px rgba(251, 191, 36, 0.15);
+}
+
+.logro-card:hover {
+    transform: translateY(-2px);
+}
+
+.logro-badge-container {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: rgba(15, 23, 42, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+}
+
+.logro-card.unlocked .logro-badge-container {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(217, 119, 6, 0.2));
+    border: 1px solid rgba(251, 191, 36, 0.4);
+    color: var(--accent-star);
+}
+
+.logro-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.logro-nombre {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.logro-desc {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+    line-height: 1.3;
+}
+
+.logro-fecha {
+    font-size: 0.65rem;
+    color: var(--accent-star);
+    margin-top: 0.35rem;
+    font-weight: 600;
+}
+
+/* --- BADGES DE ESTADO DE LECTURA --- */
+.status-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    z-index: 5;
+    pointer-events: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.status-badge.want_to_read {
+    background-color: rgba(99, 102, 241, 0.9); /* Indigo */
+    color: #ffffff;
+}
+
+.status-badge.reading {
+    background-color: rgba(251, 191, 36, 0.9); /* Gold */
+    color: #0f172a;
+}
+
+.status-badge.completed {
+    background-color: rgba(16, 185, 129, 0.9); /* Emerald Green */
+    color: #ffffff;
 }

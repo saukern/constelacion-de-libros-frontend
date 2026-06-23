@@ -178,8 +178,17 @@ function mostrarLibros(generoFiltrado = 'todos') {
 			? `<img src="${libro.portada}" alt="${libro.titulo}" style="width: 100%; height: 100%; object-fit: cover;">`
 			: `<span class="material-symbols-outlined" style="font-size: 48px;">${defaultIcon}</span>`;
 
+		const mapStatus = {
+			'WANT_TO_READ': { label: 'Quiero leer', class: 'want_to_read' },
+			'READING': { label: 'Leyendo', class: 'reading' },
+			'COMPLETED': { label: 'Leído', class: 'completed' }
+		};
+		const statusObj = mapStatus[libro.estadoLectura] || { label: 'Leyendo', class: 'reading' };
+		const statusBadgeHTML = `<span class="status-badge ${statusObj.class}">${statusObj.label}</span>`;
+
 		tarjeta.innerHTML = `
             <div class="book-cover">
+                ${statusBadgeHTML}
                 ${portadaHTML}
                 <div class="book-actions-overlay">
                     <button class="overlay-action-btn read-btn" title="Leer">
@@ -343,6 +352,8 @@ const cancelEditModalBtn = document.getElementById('btn-cancelar-edit');
 const editForm = document.getElementById('edit-form');
 const editIdInput = document.getElementById('edit-id');
 const editTipoInput = document.getElementById('edit-tipo');
+const editProgresoIdInput = document.getElementById('edit-progreso-id');
+const editEstadoSelect = document.getElementById('edit-estado');
 const editTituloInput = document.getElementById('edit-titulo');
 const editAutorInput = document.getElementById('edit-autor');
 const editGeneroInput = document.getElementById('edit-genero');
@@ -353,6 +364,8 @@ const editGroupDocumento = document.getElementById('edit-group-documento');
 
 function abrirModalEditar(libro) {
 	editIdInput.value = libro.archivoId; // El backend actualiza por el ID del archivo
+	editProgresoIdInput.value = libro.id;
+	editEstadoSelect.value = libro.estadoLectura || 'WANT_TO_READ';
 	editTipoInput.value = libro.tipo;
 	editTituloInput.value = libro.titulo;
 
@@ -387,8 +400,10 @@ editForm?.addEventListener('submit', async (e) => {
 	e.preventDefault();
 
 	const archivoId = Number(editIdInput.value);
+	const progresoId = Number(editProgresoIdInput.value);
 	const tipo = editTipoInput.value;
 	const titulo = editTituloInput.value.trim();
+	const estadoLectura = editEstadoSelect.value;
 
 	const metadatos = { titulo };
 
@@ -406,13 +421,24 @@ editForm?.addEventListener('submit', async (e) => {
 		submitBtn.disabled = true;
 		submitBtn.textContent = 'Guardando...';
 
+		// 1. Guardar cambios de metadatos del archivo
 		const resultado = await apiEditarArchivo(archivoId, metadatos);
+
+		// 2. Guardar cambios en el progreso (estado de lectura)
+		const resultadoProgreso = await apiActualizarProgreso(progresoId, undefined, estadoLectura);
 
 		submitBtn.disabled = false;
 		submitBtn.textContent = textOriginal;
 
 		cerrarModalEditar();
-		mostrarToast(resultado.mensaje, 'success');
+
+		// Si se desbloquearon logros al actualizar el progreso del estado
+		if (resultadoProgreso && resultadoProgreso.logros_desbloqueados && resultadoProgreso.logros_desbloqueados.length > 0) {
+			const nombresLogros = resultadoProgreso.logros_desbloqueados.map(l => l.nombre).join(', ');
+			mostrarToast(`${resultado.mensaje || 'Archivo actualizado con éxito'}. ¡Logros desbloqueados: ${nombresLogros}!`, 'success');
+		} else {
+			mostrarToast(resultado.mensaje || 'Archivo actualizado con éxito', 'success');
+		}
 
 		await cargarBiblioteca();
 
@@ -569,6 +595,7 @@ document.getElementById('logout-btn')?.addEventListener('click', (e) => {
 // CONTROL DE PESTAÑAS (TABS)
 const tabButtons = document.querySelectorAll('.tab-btn');
 const discoverArea = document.getElementById('discover-area');
+const logrosArea = document.getElementById('logros-area');
 
 tabButtons.forEach(btn => {
 	btn.addEventListener('click', () => {
@@ -580,12 +607,21 @@ tabButtons.forEach(btn => {
 			activeTab = 'descubrir';
 			booksGrid.style.display = 'none';
 			discoverArea.style.display = 'flex';
+			logrosArea.style.display = 'none';
 			sectionTitle.textContent = 'Descubrir en Project Gutenberg';
 			cargarLibrosPopularesGutenberg();
+		} else if (tab === 'logros') {
+			activeTab = 'logros';
+			booksGrid.style.display = 'none';
+			discoverArea.style.display = 'none';
+			logrosArea.style.display = 'flex';
+			sectionTitle.textContent = 'Logros y Metas';
+			cargarMetasYLogros();
 		} else if (tab === 'documentos') {
 			activeTab = 'documentos';
 			booksGrid.style.display = 'grid';
 			discoverArea.style.display = 'none';
+			logrosArea.style.display = 'none';
 			sectionTitle.textContent = 'Mis Documentos';
 			actualizarSidebar();
 			mostrarLibros('todos');
@@ -593,6 +629,7 @@ tabButtons.forEach(btn => {
 			activeTab = 'libros';
 			booksGrid.style.display = 'grid';
 			discoverArea.style.display = 'none';
+			logrosArea.style.display = 'none';
 			sectionTitle.textContent = 'Mi Biblioteca Personal';
 			actualizarSidebar();
 			mostrarLibros('todos');
@@ -600,6 +637,7 @@ tabButtons.forEach(btn => {
 			activeTab = 'todos';
 			booksGrid.style.display = 'grid';
 			discoverArea.style.display = 'none';
+			logrosArea.style.display = 'none';
 			sectionTitle.textContent = 'Todos los Archivos';
 			actualizarSidebar();
 			mostrarLibros('todos');
@@ -729,6 +767,106 @@ searchBtn?.addEventListener('click', buscarGutenberg);
 searchInput?.addEventListener('keydown', (e) => {
 	if (e.key === 'Enter') {
 		buscarGutenberg();
+	}
+});
+
+// CONTROL DE METAS Y LOGROS
+const logrosGrid = document.getElementById('logros-grid');
+const metaObjetivo = document.getElementById('meta-objetivo');
+const metaCompletados = document.getElementById('meta-completados');
+const metaPorcentaje = document.getElementById('meta-porcentaje');
+const metaProgressFill = document.getElementById('meta-progress-fill');
+const metaInput = document.getElementById('meta-input');
+const metaBtn = document.getElementById('meta-btn');
+
+async function cargarMetasYLogros() {
+	try {
+		// 1. Cargar Meta Literaria
+		const meta = await apiObtenerMeta();
+		metaObjetivo.textContent = meta.libros_objetivo;
+		metaCompletados.textContent = meta.libros_completados;
+		metaPorcentaje.textContent = `${meta.progreso_porcentaje}%`;
+		metaProgressFill.style.width = `${meta.progreso_porcentaje}%`;
+		metaInput.value = meta.libros_objetivo || '';
+
+		// 2. Cargar Logros
+		const logros = await apiObtenerLogros();
+		logrosGrid.innerHTML = '';
+
+		// Emojis según código de insignia
+		const emojisLogros = {
+			'PRIMER_PASO': '👣',
+			'DEVORADOR': '🐉',
+			'CONSTANCIA': '⏳',
+			'META_CUMPLIDA': '👑'
+		};
+
+		logros.forEach(logro => {
+			const card = document.createElement('div');
+			card.classList.add('logro-card');
+			if (logro.desbloqueado) {
+				card.classList.add('unlocked');
+			}
+
+			const emoji = emojisLogros[logro.codigo_insignia] || '🏆';
+			
+			let fechaHTML = '';
+			if (logro.desbloqueado && logro.desbloqueado_en) {
+				const fecha = new Date(logro.desbloqueado_en).toLocaleDateString('es-ES', {
+					year: 'numeric',
+					month: 'short',
+					day: 'numeric'
+				});
+				fechaHTML = `<span class="logro-fecha">Desbloqueado: ${fecha}</span>`;
+			} else {
+				fechaHTML = `<span class="logro-fecha" style="color: var(--text-muted); font-weight: normal;">Bloqueado</span>`;
+			}
+
+			card.innerHTML = `
+				<div class="logro-badge-container">
+					${emoji}
+				</div>
+				<div class="logro-info">
+					<span class="logro-nombre">${logro.nombre}</span>
+					<span class="logro-desc">${logro.descripcion}</span>
+					${fechaHTML}
+				</div>
+			`;
+
+			logrosGrid.appendChild(card);
+		});
+
+	} catch (error) {
+		console.error('Error al cargar metas y logros:', error);
+		mostrarToast(`Error al cargar logros: ${error.message}`, 'error');
+	}
+}
+
+// Evento para establecer la meta
+metaBtn?.addEventListener('click', async () => {
+	const librosObjetivo = Number(metaInput.value);
+	if (isNaN(librosObjetivo) || librosObjetivo <= 0) {
+		mostrarToast('Introduce un número válido de libros (mayor a 0).', 'error');
+		return;
+	}
+
+	try {
+		metaBtn.disabled = true;
+		const resultado = await apiEstablecerMeta(librosObjetivo);
+		metaBtn.disabled = false;
+		
+		mostrarToast(resultado.mensaje, 'success');
+		
+		// Si se desbloqueó algún logro al guardar la meta (ej. META_CUMPLIDA)
+		if (resultado.logros_desbloqueados && resultado.logros_desbloqueados.length > 0) {
+			const nombresLogros = resultado.logros_desbloqueados.map(l => l.nombre).join(', ');
+			mostrarToast(`¡Logros desbloqueados: ${nombresLogros}!`, 'success');
+		}
+
+		await cargarMetasYLogros();
+	} catch (error) {
+		metaBtn.disabled = false;
+		mostrarToast(`Error al establecer la meta: ${error.message}`, 'error');
 	}
 });
 

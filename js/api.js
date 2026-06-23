@@ -224,4 +224,54 @@ async function apiEliminarDeBiblioteca(progresoId) {
 	}
 }
 
+// Petición al backend para obtener los logros del usuario
+async function apiObtenerLogros() {
+	try {
+		const respuesta = await fetch(`${API_URL}/logros/logros`, {
+			method: 'GET',
+			headers: obtenerCabeceras()
+		});
+
+		return await procesarRespuesta(respuesta);
+	} catch (error) {
+		console.error('Error al obtener logros:', error);
+		throw error;
+	}
+}
+
+// Petición al backend para obtener la meta literaria del usuario
+async function apiObtenerMeta(anio) {
+	try {
+		const url = anio ? `${API_URL}/logros/meta/${anio}` : `${API_URL}/logros/meta`;
+		const respuesta = await fetch(url, {
+			method: 'GET',
+			headers: obtenerCabeceras()
+		});
+
+		return await procesarRespuesta(respuesta);
+	} catch (error) {
+		console.error('Error al obtener meta literaria:', error);
+		throw error;
+	}
+}
+
+// Petición al backend para establecer la meta literaria
+async function apiEstablecerMeta(librosObjetivo, anio) {
+	try {
+		const cuerpo = { libros_objetivo: Number(librosObjetivo) };
+		if (anio) cuerpo.anio = Number(anio);
+
+		const respuesta = await fetch(`${API_URL}/logros/meta`, {
+			method: 'POST',
+			headers: obtenerCabeceras(),
+			body: JSON.stringify(cuerpo)
+		});
+
+		return await procesarRespuesta(respuesta);
+	} catch (error) {
+		console.error('Error al establecer meta literaria:', error);
+		throw error;
+	}
+}
+
 
