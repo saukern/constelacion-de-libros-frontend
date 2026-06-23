@@ -193,3 +193,35 @@ async function apiRegistrarSesionLectura(progresoId, duracionMinutos, paginasLei
 	}
 }
 
+// Petición al backend para editar los metadatos de un archivo
+async function apiEditarArchivo(archivoId, metadatos) {
+	try {
+		const respuesta = await fetch(`${API_URL}/biblioteca/archivo/${archivoId}`, {
+			method: 'PUT',
+			headers: obtenerCabeceras(),
+			body: JSON.stringify(metadatos)
+		});
+
+		return await procesarRespuesta(respuesta);
+	} catch (error) {
+		console.error('Error al editar archivo:', error);
+		throw error;
+	}
+}
+
+// Petición al backend para eliminar un registro de la biblioteca (progresoId)
+async function apiEliminarDeBiblioteca(progresoId) {
+	try {
+		const respuesta = await fetch(`${API_URL}/biblioteca/${progresoId}`, {
+			method: 'DELETE',
+			headers: obtenerCabeceras()
+		});
+
+		return await procesarRespuesta(respuesta);
+	} catch (error) {
+		console.error('Error al eliminar de biblioteca:', error);
+		throw error;
+	}
+}
+
+

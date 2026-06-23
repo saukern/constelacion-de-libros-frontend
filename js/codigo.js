@@ -7,6 +7,72 @@ if (localStorage.getItem('sesionActiva') !== 'true') {
 let librosDisponibles = [];
 let activeTab = 'todos';
 
+// SISTEMA DE NOTIFICACIONES TOAST PERSONALIZADO
+function mostrarToast(mensaje, tipo = 'success') {
+	const container = document.getElementById('toast-container');
+	if (!container) return;
+
+	const toast = document.createElement('div');
+	toast.classList.add('toast', tipo);
+
+	let icono = 'info';
+	if (tipo === 'success') icono = 'check_circle';
+	if (tipo === 'error') icono = 'error';
+
+	toast.innerHTML = `
+		<span class="material-symbols-outlined toast-icon ${tipo}">${icono}</span>
+		<span class="toast-message">${mensaje}</span>
+	`;
+
+	container.appendChild(toast);
+
+	// Remover toast después de 4 segundos con fade out
+	setTimeout(() => {
+		toast.style.opacity = '0';
+		toast.style.transform = 'translateY(-20px) scale(0.9)';
+		setTimeout(() => {
+			toast.remove();
+		}, 300);
+	}, 4000);
+}
+
+// SISTEMA DE CONFIRMACIÓN PERSONALIZADO
+let confirmModalCallback = null;
+
+const confirmModal = document.getElementById('confirm-modal');
+const confirmTitle = document.getElementById('confirm-title');
+const confirmMessage = document.getElementById('confirm-message');
+const confirmYesBtn = document.getElementById('btn-confirm-yes');
+const confirmNoBtn = document.getElementById('btn-confirm-no');
+const closeConfirmModalBtn = document.getElementById('close-confirm-modal');
+
+function mostrarConfirmacion(titulo, mensaje, alConfirmar) {
+	confirmTitle.textContent = titulo;
+	confirmMessage.textContent = mensaje;
+	confirmModalCallback = alConfirmar;
+
+	confirmModal.classList.add('show');
+	overlay.classList.add('show');
+}
+
+function cerrarConfirmacion() {
+	confirmModal.classList.remove('show');
+	if (!sidebar.classList.contains('open') && !editModal.classList.contains('show') && !uploadModal.classList.contains('show')) {
+		overlay.classList.remove('show');
+	}
+	confirmModalCallback = null;
+}
+
+confirmYesBtn?.addEventListener('click', () => {
+	if (confirmModalCallback) {
+		confirmModalCallback();
+	}
+	cerrarConfirmacion();
+});
+
+confirmNoBtn?.addEventListener('click', cerrarConfirmacion);
+closeConfirmModalBtn?.addEventListener('click', cerrarConfirmacion);
+
 // ELEMENTOS DEL DOM
 const menuToggle = document.getElementById('menu-toggle');
 const closeSidebar = document.getElementById('close-sidebar');
@@ -115,22 +181,47 @@ function mostrarLibros(generoFiltrado = 'todos') {
 		tarjeta.innerHTML = `
             <div class="book-cover">
                 ${portadaHTML}
+                <div class="book-actions-overlay">
+                    <button class="overlay-action-btn read-btn" title="Leer">
+                        <span class="material-symbols-outlined" style="font-size: 28px;">menu_book</span>
+                    </button>
+                    <div class="overlay-action-row">
+                        <button class="overlay-action-btn edit-btn" title="Editar metadatos">
+                            <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
+                        </button>
+                        <button class="overlay-action-btn delete-btn" title="Eliminar de biblioteca">
+                            <span class="material-symbols-outlined" style="font-size: 18px;">delete</span>
+                        </button>
+                    </div>
+                </div>
             </div>
             <h4 class="book-title" title="${libro.titulo}">${libro.titulo}</h4>
             <p class="book-author">${libro.autor}</p>
         `;
 
-		// Redirigir al lector interno con hash params
+		// Evitar propagación para las acciones individuales
+		const readBtn = tarjeta.querySelector('.read-btn');
+		const editBtn = tarjeta.querySelector('.edit-btn');
+		const deleteBtn = tarjeta.querySelector('.delete-btn');
+
+		readBtn.addEventListener('click', (e) => {
+			e.stopPropagation();
+			abrirLector(libro);
+		});
+
+		editBtn.addEventListener('click', (e) => {
+			e.stopPropagation();
+			abrirModalEditar(libro);
+		});
+
+		deleteBtn.addEventListener('click', (e) => {
+			e.stopPropagation();
+			confirmarEliminarLibro(libro);
+		});
+
+		// Clic en la tarjeta también abre el lector
 		tarjeta.addEventListener('click', () => {
-			console.log('Tarjeta clickeada. Datos del libro/documento:', libro);
-			if (libro.linkLectura) {
-				const urlDestino = `lector.html#id=${libro.id}&titulo=${encodeURIComponent(libro.titulo)}&formato=${libro.formato}&url=${encodeURIComponent(libro.linkLectura)}&paginaActual=${libro.paginaActual || 0}`;
-				console.log('Redirigiendo a:', urlDestino);
-				window.location.href = urlDestino;
-			} else {
-				console.warn('El archivo no tiene linkLectura');
-				alert(`El archivo "${libro.titulo}" no cuenta con un enlace de lectura.`);
-			}
+			abrirLector(libro);
 		});
 
 		booksGrid.appendChild(tarjeta);
@@ -232,6 +323,125 @@ function actualizarSidebar() {
 	});
 }
 
+// ABRIR EL LECTOR INTERNO
+function abrirLector(libro) {
+	console.log('Abriendo lector. Datos del libro/documento:', libro);
+	if (libro.linkLectura) {
+		const urlDestino = `lector.html#id=${libro.id}&titulo=${encodeURIComponent(libro.titulo)}&formato=${libro.formato}&url=${encodeURIComponent(libro.linkLectura)}&paginaActual=${libro.paginaActual || 0}`;
+		console.log('Redirigiendo a:', urlDestino);
+		window.location.href = urlDestino;
+	} else {
+		console.warn('El archivo no tiene linkLectura');
+		mostrarToast(`El archivo "${libro.titulo}" no cuenta con un enlace de lectura.`, 'error');
+	}
+}
+
+// CONTROL DE EDICIÓN Y ELIMINACIÓN (CRUD)
+const editModal = document.getElementById('edit-modal');
+const closeEditModalBtn = document.getElementById('close-edit-modal');
+const cancelEditModalBtn = document.getElementById('btn-cancelar-edit');
+const editForm = document.getElementById('edit-form');
+const editIdInput = document.getElementById('edit-id');
+const editTipoInput = document.getElementById('edit-tipo');
+const editTituloInput = document.getElementById('edit-titulo');
+const editAutorInput = document.getElementById('edit-autor');
+const editGeneroInput = document.getElementById('edit-genero');
+const editMateriaInput = document.getElementById('edit-materia');
+const editTipoDocSelect = document.getElementById('edit-tipo-doc');
+const editGroupLibro = document.getElementById('edit-group-libro');
+const editGroupDocumento = document.getElementById('edit-group-documento');
+
+function abrirModalEditar(libro) {
+	editIdInput.value = libro.archivoId; // El backend actualiza por el ID del archivo
+	editTipoInput.value = libro.tipo;
+	editTituloInput.value = libro.titulo;
+
+	if (libro.tipo === 'libro') {
+		editGroupLibro.style.display = 'block';
+		editGroupDocumento.style.display = 'none';
+		editAutorInput.value = libro.autor;
+		editGeneroInput.value = libro.genero;
+	} else {
+		editGroupLibro.style.display = 'none';
+		editGroupDocumento.style.display = 'block';
+		editMateriaInput.value = libro.genero; // El genero mapeado en el api es la materia
+		editTipoDocSelect.value = 'OTRO';
+	}
+
+	editModal.classList.add('show');
+	overlay.classList.add('show');
+}
+
+function cerrarModalEditar() {
+	editModal.classList.remove('show');
+	if (!sidebar.classList.contains('open')) {
+		overlay.classList.remove('show');
+	}
+	editForm.reset();
+}
+
+closeEditModalBtn?.addEventListener('click', cerrarModalEditar);
+cancelEditModalBtn?.addEventListener('click', cerrarModalEditar);
+
+editForm?.addEventListener('submit', async (e) => {
+	e.preventDefault();
+
+	const archivoId = Number(editIdInput.value);
+	const tipo = editTipoInput.value;
+	const titulo = editTituloInput.value.trim();
+
+	const metadatos = { titulo };
+
+	if (tipo === 'libro') {
+		metadatos.autor = editAutorInput.value.trim() || 'Autor Desconocido';
+		metadatos.genero = editGeneroInput.value.trim() || 'General';
+	} else {
+		metadatos.materia = editMateriaInput.value.trim() || 'General';
+		metadatos.tipo_documento = editTipoDocSelect.value;
+	}
+
+	try {
+		const submitBtn = editForm.querySelector('button[type="submit"]');
+		const textOriginal = submitBtn.textContent;
+		submitBtn.disabled = true;
+		submitBtn.textContent = 'Guardando...';
+
+		const resultado = await apiEditarArchivo(archivoId, metadatos);
+
+		submitBtn.disabled = false;
+		submitBtn.textContent = textOriginal;
+
+		cerrarModalEditar();
+		mostrarToast(resultado.mensaje, 'success');
+
+		await cargarBiblioteca();
+
+	} catch (error) {
+		mostrarToast(`Error al editar archivo: ${error.message}`, 'error');
+		const submitBtn = editForm.querySelector('button[type="submit"]');
+		if (submitBtn) {
+			submitBtn.disabled = false;
+			submitBtn.textContent = 'Guardar Cambios';
+		}
+	}
+});
+
+async function confirmarEliminarLibro(libro) {
+	mostrarConfirmacion(
+		'Quitar de Biblioteca',
+		`¿Estás seguro de que deseas quitar "${libro.titulo}" de tu biblioteca personal? Esta acción no se puede deshacer.`,
+		async () => {
+			try {
+				const resultado = await apiEliminarDeBiblioteca(libro.id);
+				mostrarToast(resultado.mensaje, 'success');
+				await cargarBiblioteca();
+			} catch (error) {
+				mostrarToast(`Error al eliminar: ${error.message}`, 'error');
+			}
+		}
+	);
+}
+
 // CONTROL DE SUBIDA (SUBIR ARCHIVO PROPIO DIRECTAMENTE)
 uploadBtn.addEventListener('click', () => {
 	abrirModalUpload();
@@ -289,7 +499,7 @@ uploadForm?.addEventListener('submit', async (e) => {
 	const portadaInput = document.getElementById('upload-portada');
 
 	if (!archivoInput.files || archivoInput.files.length === 0) {
-		alert('Por favor selecciona un archivo.');
+		mostrarToast('Por favor selecciona un archivo.', 'error');
 		return;
 	}
 
@@ -330,15 +540,15 @@ uploadForm?.addEventListener('submit', async (e) => {
 		// verificar si hay logros desbloqueados
 		if (resultado.logros_desbloqueados && resultado.logros_desbloqueados.length > 0) {
 			const nombresLogros = resultado.logros_desbloqueados.map(l => l.nombre).join(', ');
-			alert(`${resultado.mensaje}\n\n¡Has desbloqueado logros!: ${nombresLogros}`);
+			mostrarToast(`${resultado.mensaje}. ¡Logros desbloqueados: ${nombresLogros}!`, 'success');
 		} else {
-			alert(resultado.mensaje);
+			mostrarToast(resultado.mensaje, 'success');
 		}
 
 		await cargarBiblioteca();
 
 	} catch (error) {
-		alert(`Error al subir el archivo: ${error.message}`);
+		mostrarToast(`Error al subir el archivo: ${error.message}`, 'error');
 		const submitBtn = uploadForm.querySelector('button[type="submit"]');
 		if (submitBtn) {
 			submitBtn.disabled = false;
@@ -453,15 +663,15 @@ function renderizarResultadosGutenberg(books) {
 
 				if (resultado.logros_desbloqueados && resultado.logros_desbloqueados.length > 0) {
 					const nombresLogros = resultado.logros_desbloqueados.map(l => l.nombre).join(', ');
-					alert(`${resultado.mensaje}\n\n¡Has desbloqueado logros!: ${nombresLogros}`);
+					mostrarToast(`${resultado.mensaje}. ¡Logros desbloqueados: ${nombresLogros}!`, 'success');
 				} else {
-					alert(resultado.mensaje);
+					mostrarToast(resultado.mensaje, 'success');
 				}
 
 				await cargarBiblioteca();
 
 			} catch (error) {
-				alert(`Error al importar el libro "${book.title}": ${error.message}`);
+				mostrarToast(`Error al importar el libro "${book.title}": ${error.message}`, 'error');
 				importBtn.disabled = false;
 				importBtn.classList.remove('importing');
 				importBtn.innerHTML = textOriginal;
@@ -529,7 +739,7 @@ async function cargarBiblioteca() {
 		actualizarSidebar();
 		mostrarLibros('todos');
 	} catch (error) {
-		alert(`No se pudo cargar la biblioteca: ${error.message}`);
+		mostrarToast(`No se pudo cargar la biblioteca: ${error.message}`, 'error');
 	}
 }
 
